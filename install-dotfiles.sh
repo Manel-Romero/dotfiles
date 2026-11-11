@@ -36,8 +36,11 @@ fi
 
 info()    { echo -e "${C_CYAN}[INFO]${C_RESET} $1"; }
 success() { echo -e "${C_GREEN}[OK]${C_RESET} $1"; }
+ok()      { echo -e "${C_GREEN}[OK]${C_RESET} $1"; }
 warn()    { echo -e "${C_YELLOW}[WARN]${C_RESET} $1"; }
 error()   { echo -e "${C_RED}[ERROR]${C_RESET} $1" >&2; }
+pass()    { echo -e "${C_GREEN}[PASS]${C_RESET} $1"; }
+fail()    { echo -e "${C_RED}[FAIL]${C_RESET} $1"; }
 
 # ==============================================================================
 # 1. Module Registry & Dependency Graph
@@ -340,16 +343,14 @@ EOF
 }
 
 list_modules_info() {
-    echo -e "${C_BOLD}${C_BLUE}=================================================================${C_RESET}"
-    echo -e "${C_BOLD}${C_BLUE}                  Available Dotfiles Modules                     ${C_RESET}"
-    echo -e "${C_BOLD}${C_BLUE}=================================================================${C_RESET}\n"
+    echo -e "${C_BOLD}${C_CYAN}=== Available Dotfiles Modules ===${C_RESET}\n"
 
     for mod in "${ALL_MODULES[@]}"; do
         local deps="${MODULE_DEPS[$mod]:-none}"
         local pkgs="${MODULE_PKGS[$mod]:-none}"
-        echo -e "${C_BOLD}${C_CYAN}● ${mod}${C_RESET} - ${MODULE_DESC[$mod]}"
-        echo -e "  ${C_DIM}Prerequisites:${C_RESET} ${C_YELLOW}${deps}${C_RESET}"
-        echo -e "  ${C_DIM}Arch Packages:${C_RESET} ${pkgs}"
+        echo -e "  ${C_BOLD}${C_CYAN}${mod}${C_RESET} - ${MODULE_DESC[$mod]}"
+        echo -e "    ${C_DIM}Prerequisites:${C_RESET} ${C_YELLOW}${deps}${C_RESET}"
+        echo -e "    ${C_DIM}Arch Packages:${C_RESET} ${pkgs}"
         echo
     done
 
@@ -358,6 +359,7 @@ list_modules_info() {
         echo -e "  ${C_GREEN}${p}:${C_RESET} ${PRESETS[$p]}"
     done
 }
+
 
 # ==============================================================================
 # 4. Parse Arguments
@@ -454,9 +456,7 @@ BACKUP_DIR="${WORK_TREE}/.dotfiles-backup-${TIMESTAMP}"
 # ==============================================================================
 
 if [[ $INTERACTIVE_REQUESTED -eq 1 || (${#REQUESTED_INPUTS[@]} -eq 0 && -t 0 && -t 1) ]]; then
-    echo -e "${C_BOLD}${C_BLUE}====================================================${C_RESET}"
-    echo -e "${C_BOLD}${C_BLUE}         Dotfiles Modular Installation Menu         ${C_RESET}"
-    echo -e "${C_BOLD}${C_BLUE}====================================================${C_RESET}"
+    echo -e "${C_BOLD}${C_CYAN}=== Dotfiles Modular Installation Menu ===${C_RESET}"
     echo -e "Choose an installation preset or custom selection:\n"
     echo -e "  ${C_CYAN}1)${C_RESET} ${C_BOLD}Full Desktop${C_RESET}      All modules (Niri, Waybar, Kitty, Neovim, CLI tools)"
     echo -e "  ${C_CYAN}2)${C_RESET} ${C_BOLD}Developer${C_RESET}         Shell, Git, Kitty, Neovim, CLI tools (Headless/Dev)"
@@ -490,7 +490,7 @@ if [[ $INTERACTIVE_REQUESTED -eq 1 || (${#REQUESTED_INPUTS[@]} -eq 0 && -t 0 && 
             REQUESTED_INPUTS=("${CHOSEN_MODS[@]}")
             ;;
         q|Q)
-            echo "Installation cancelled."
+            info "Installation cancelled."
             exit 0
             ;;
         *)
@@ -533,9 +533,7 @@ NEEDED_PACKAGES="$(get_packages_for_modules "${RESOLVED_MODULES[@]}")"
 PATTERNS_STR="$(get_patterns_for_modules "${RESOLVED_MODULES[@]}")"
 read -r -a SPARSE_PATTERNS <<< "$PATTERNS_STR"
 
-echo -e "${C_BOLD}${C_BLUE}====================================================${C_RESET}"
-echo -e "${C_BOLD}${C_BLUE}       Dotfiles Modular Installer & Bootstrap       ${C_RESET}"
-echo -e "${C_BOLD}${C_BLUE}====================================================${C_RESET}"
+echo -e "${C_BOLD}${C_CYAN}=== Dotfiles Installer Configuration ===${C_RESET}"
 echo -e "Target Work Tree:    ${C_CYAN}${WORK_TREE}${C_RESET}"
 echo -e "Bare Git Directory:  ${C_CYAN}${GIT_DIR}${C_RESET}"
 echo -e "Requested Selection: ${C_YELLOW}${REQUESTED_INPUTS[*]}${C_RESET}"
@@ -555,7 +553,7 @@ echo
 
 # Dry run exit
 if [[ $DRY_RUN -eq 1 ]]; then
-    info "DRY-RUN MODE ENABLED: No files or repositories will be touched."
+    info "Dry-run mode enabled: No files or repositories will be touched."
     echo -e "\n${C_BOLD}Sparse-checkout patterns that would be applied:${C_RESET}"
     for pat in "${SPARSE_PATTERNS[@]}"; do
         echo "  $pat"
@@ -746,18 +744,16 @@ fi
 # 13. Summary & Next Steps
 # ==============================================================================
 
-echo -e "\n${C_BOLD}${C_GREEN}====================================================${C_RESET}"
-echo -e "${C_BOLD}${C_GREEN}         Dotfiles Installation Complete!            ${C_RESET}"
-echo -e "${C_BOLD}${C_GREEN}====================================================${C_RESET}"
+echo -e "\n${C_BOLD}${C_GREEN}=== Dotfiles Installation Complete ===${C_RESET}"
 echo -e "Installed Modules: ${C_CYAN}${RESOLVED_MODULES[*]}${C_RESET}"
 
 if [[ $HAS_BACKUPS -eq 1 ]]; then
-    echo -e "\n${C_YELLOW}Note: Pre-existing conflicting files were moved to:${C_RESET}"
-    echo -e "   ${C_CYAN}${BACKUP_DIR}${C_RESET}"
+    warn "Pre-existing conflicting files were moved to: ${BACKUP_DIR}"
 fi
 
 echo -e "\n${C_BOLD}Useful Commands:${C_RESET}"
-echo -e " • Check status:           ${C_CYAN}dotfiles status${C_RESET}"
-echo -e " • Add another module:     ${C_CYAN}./install-dotfiles.sh --add-module=<name>${C_RESET}"
-echo -e " • List installed patterns:${C_CYAN}dotfiles sparse-checkout list${C_RESET}"
-echo -e " • Run security doctor:    ${C_CYAN}dotfiles-doctor${C_RESET}\n"
+echo -e "  - Check status:           ${C_CYAN}dotfiles status${C_RESET}"
+echo -e "  - Add another module:     ${C_CYAN}./install-dotfiles.sh --add-module=<name>${C_RESET}"
+echo -e "  - List installed patterns:${C_CYAN}dotfiles sparse-checkout list${C_RESET}"
+echo -e "  - Run security doctor:    ${C_CYAN}dotfiles-doctor${C_RESET}\n"
+

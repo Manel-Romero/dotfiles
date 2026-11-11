@@ -76,6 +76,16 @@ return {
       disable_hint = false, -- Mostrar barra de sugerencias/atajos
       disable_insert_on_commit = "auto", -- Modo normal al editar/amend, insert si está vacío
 
+      -- Resaltado avanzado de sintaxis en diffs
+      treesitter_diff_highlight = true, -- Mantiene el resaltado de sintaxis de tu código en los diffs
+      word_diff_highlight = true,       -- Resalta con precisión los cambios a nivel de palabra
+
+      highlight = {
+        red = "#f38ba8",   -- Rosa suave/coral (sustituye rojos-marrones)
+        green = "#a6e3a1", -- Menta/salvia suave (sustituye verdes fluorescentes)
+        purple = "#89ddff",
+      },
+
       signs = {
         hunk = { "", "" },
         item = { "", "" },

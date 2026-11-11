@@ -25,6 +25,70 @@ local function load_custom_theme()
   hl("DiagnosticWarn", { fg = "#ee572c" })
   hl("DiagnosticInfo", { fg = "#3c5c71" })
   hl("DiagnosticHint", { fg = "#2c4246" })
+
+  -- =========================================================================
+  -- Diff & Git (Neovim nativo, Diffview y Neogit)
+  -- =========================================================================
+  local diff_add_bg    = "#1e332a" -- Verde bosque/salvia suave oscuro (sin fluorescencias)
+  local diff_del_bg    = "#361f26" -- Borgoña / vino suave oscuro (sin marrones turbios)
+  local diff_change_bg = "#202a36" -- Azul pizarra tenue para filas modificadas
+  local diff_text_bg   = "#334c66" -- Azul acero acentuado para tokens modificados intra-línea
+
+  local git_add_fg     = "#81c784" -- Menta / salvia luminoso legible
+  local git_del_fg     = "#f38ba8" -- Rosa / coral suave legible
+  local git_mod_fg     = "#7098b0" -- Azul pizarra luminoso
+  local filler_fg      = "#484f5c" -- Gris tenue para relleno de diff sin ruido
+
+  -- Grupos nativos de Neovim
+  hl("DiffAdd",    { bg = diff_add_bg })
+  hl("DiffDelete", { bg = diff_del_bg, fg = git_del_fg })
+  hl("DiffChange", { bg = diff_change_bg })
+  hl("DiffText",   { bg = diff_text_bg, fg = "#f0f4fc", bold = true })
+
+  -- Resaltado mejorado Diffview
+  hl("DiffviewDiffAddAsDelete", { bg = diff_del_bg })
+  hl("DiffviewDiffDeleteDim",   { fg = filler_fg, bg = "NONE" })
+
+  -- Sintaxis estándar diff y panel lateral
+  hl("diffAdded",   { fg = git_add_fg })
+  hl("diffRemoved", { fg = git_del_fg })
+  hl("diffChanged", { fg = git_mod_fg })
+
+  hl("DiffviewStatusAdded",         { fg = git_add_fg, bold = true })
+  hl("DiffviewStatusUntracked",     { fg = git_add_fg })
+  hl("DiffviewStatusDeleted",       { fg = git_del_fg, bold = true })
+  hl("DiffviewStatusModified",      { fg = git_mod_fg, bold = true })
+  hl("DiffviewStatusRenamed",       { fg = git_mod_fg })
+  hl("DiffviewFilePanelInsertions", { fg = git_add_fg, bold = true })
+  hl("DiffviewFilePanelDeletions",  { fg = git_del_fg, bold = true })
+  hl("DiffviewFilePanelConflicts",  { fg = "#ee572c", bold = true })
+
+  -- Grupos específicos de Neogit (legibilidad clara sin contrastes abrasivos)
+  hl("NeogitDiffAdd",              { bg = "#1c2e24", fg = "#a6e3a1" })
+  hl("NeogitDiffAddHighlight",     { bg = "#233d2f", fg = "#bbf7b8" })
+  hl("NeogitDiffAddCursor",        { bg = "#2c4f3c", fg = "#ffffff", bold = true })
+  hl("NeogitDiffAddInline",        { bg = "#35694a", fg = "#ffffff", bold = true })
+  hl("NeogitDiffAdditions",        { fg = git_add_fg })
+
+  -- Deletions (vino suave / coral sin rojos oxidados o marrones sucios)
+  hl("NeogitDiffDelete",           { bg = "#2d1a20", fg = "#f38ba8" })
+  hl("NeogitDiffDeleteHighlight",  { bg = "#3b2029", fg = "#fca5a5" })
+  hl("NeogitDiffDeleteCursor",     { bg = "#4b2734", fg = "#ffffff", bold = true })
+  hl("NeogitDiffDeleteInline",     { bg = "#632f41", fg = "#ffffff", bold = true })
+  hl("NeogitDiffDeletions",        { fg = git_del_fg })
+
+  -- Contexto (líneas no modificadas)
+  hl("NeogitDiffContext",          { bg = "NONE",    fg = "#9ca3af" })
+  hl("NeogitDiffContextHighlight", { bg = "#1f232d", fg = fg })
+  hl("NeogitDiffContextCursor",    { bg = "#2c3345", fg = "#ffffff" })
+
+  -- Encabezados de Hunks y Ficheros
+  hl("NeogitHunkHeader",           { bg = "#222938", fg = "#7aa2f7", bold = true })
+  hl("NeogitHunkHeaderHighlight",  { bg = "#2c3549", fg = "#89ddff", bold = true })
+  hl("NeogitHunkHeaderCursor",     { bg = "#37435f", fg = "#ffffff", bold = true })
+
+  hl("NeogitDiffHeader",           { bg = "#222938", fg = "#82aaff", bold = true })
+  hl("NeogitDiffHeaderHighlight",  { bg = "#2c3549", fg = "#ffcb6b", bold = true })
 end
 
 load_custom_theme()

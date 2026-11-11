@@ -2,22 +2,88 @@
 
 Repositorio privado de configuración de entorno para Arch Linux (Wayland / Niri compositor).
 
-Gestionado mediante el patrón **Bare Git Repository**, lo que permite mantener cada archivo en su ruta natural en `$HOME` sin necesidad de enlaces simbólicos (symlinks) ni herramientas externas.
+Gestionado mediante el patrón **Bare Git Repository** con soporte para **instalación modular y sparse-checkout (`--no-cone`)**, lo que permite:
+- Mantener cada archivo en su ruta natural en `$HOME` sin enlaces simbólicos rotos.
+- Elegir qué componentes instalar de forma modular resolviendo dependencias automáticamente.
+- Mantener `dotfiles status` limpio sin ruido de archivos no instalados.
 
 ---
 
-## 🛡️ Arquitectura de Seguridad y Privacidad
+## 🛡️ Arquitectura de Seguridad y Privacidad (Zero-Leak)
 
 Para evitar la fuga accidental de credenciales, tokens o información sensible:
 1. **Configuración Local Separada (`*.local`)**:
    - `~/.gitconfig`: Carga automáticamente `~/.gitconfig.local` (donde reside el nombre y email).
-   - `~/.zshrc`: Carga automáticamente `~/.zshrc.local` si existe (para tokens de API, variables de entorno privadas o rutas específicas de una máquina).
+   - `~/.zshrc`: Carga automáticamente `~/.zshrc.local` si existe (para tokens de API, variables de entorno privadas o rutas de red).
 2. **Archivos Críticos Ignorados (`.gitignore`)**:
    - Claves SSH (`~/.ssh/`), GPG (`~/.gnupg/`), contraseñas (`~/.password-store/`).
-   - Tokens y sesiones activas (`gh/hosts.yml`, Slack, Spotify, etc.).
-   - Historiales de comandos (`.zsh_history`, `.bash_history`).
+   - Tokens y sesiones activas (`gh/hosts.yml`, Slack, Spotify, portal UPV).
+   - Historiales de terminal (`.zsh_history`, `.bash_history`).
 3. **Auditor de Seguridad Incluido (`dotfiles-doctor`)**:
    - Script en `~/.local/bin/dotfiles-doctor` para verificar en cualquier momento que no se hayan añadido archivos privados ni tokens a Git.
+
+---
+
+## 📦 Instalación y Automatización Modular (`install-dotfiles.sh`)
+
+Puedes instalar todo el sistema o seleccionar únicamente los módulos deseados. Las dependencias entre módulos se resuelven automáticamente de forma topológica.
+
+### 1. Instalación Rápida
+```bash
+# Menú interactivo (elige perfil o módulos individuales):
+curl -fsSL https://raw.githubusercontent.com/Manel-Romero/dotfiles/main/install-dotfiles.sh | bash
+
+# O mediante Git:
+git clone --bare https://github.com/Manel-Romero/dotfiles.git $HOME/.dotfiles.git
+bash $HOME/install-dotfiles.sh
+```
+
+### 2. Instalación por Perfiles (Presets)
+```bash
+# Servidor o entorno mínimo (Shell + Git + Core):
+./install-dotfiles.sh --profile=minimal
+
+# Entorno de desarrollo sin GUI (Shell, Git, Kitty, Neovim, CLI tools):
+./install-dotfiles.sh --profile=dev
+
+# Entorno completo de escritorio (todos los módulos):
+./install-dotfiles.sh --profile=desktop
+```
+
+### 3. Selección Modular de Componentes
+Si solo necesitas módulos específicos, el instalador resolverá sus dependencias automáticamente:
+```bash
+# Instala Neovim (incluye automáticamente sus dependencias: core, git, shell):
+./install-dotfiles.sh --modules=nvim
+
+# Instala Waybar (incluye: core, git, shell, system, terminal, desktop):
+./install-dotfiles.sh --modules=waybar
+
+# Añadir un módulo a una instalación existente sin borrar los actuales:
+./install-dotfiles.sh --add-module=cli-tools
+
+# Simular qué archivos y paquetes se instalarían sin tocar el disco:
+./install-dotfiles.sh --modules=waybar --dry-run
+
+# Instalar también los paquetes de Arch Linux con pacman/yay:
+./install-dotfiles.sh --profile=desktop --packages
+```
+
+---
+
+## 🧩 Grafo de Módulos y Dependencias
+
+| Módulo | Prerrequisitos | Archivos / Componentes | Paquetes Arch Linux |
+| :--- | :--- | :--- | :--- |
+| **`core`** | _ninguno_ | `.gitignore`, `README.md`, `install-dotfiles.sh`, `dotfiles-doctor`, plantillas `.local` | `base-devel`, `git` |
+| **`git`** | `core` | `~/.gitconfig` | `git`, `github-cli` |
+| **`shell`** | `core`, `git` | `~/.bashrc`, `~/.zshrc`, `~/.zprofile`, `~/.tmux.conf`, `~/.zfunc/_miupv` | `zsh`, `tmux`, `zoxide`, `fzf`, `thefuck` |
+| **`terminal`** | `shell` | `~/.config/kitty/` | `kitty`, `ttf-jetbrains-mono-nerd` |
+| **`system`** | `core` | `wireplumber`, `xdg-desktop-portal`, `user-dirs`, `mimeapps.list` | `xdg-desktop-portal-wlr`, `wireplumber`, `pipewire` |
+| **`desktop`** | `system`, `terminal` | `niri`, `swaync`, `fuzzel`, `Wallpapers/yak.webp` | `niri`, `swaybg`, `swaync`, `fuzzel`, `cliphist`, `wl-clipboard` |
+| **`waybar`** | `desktop` | `waybar`, `battery-intel.sh`, `bat_power.c` (autocompilado) | `waybar`, `gcc` |
+| **`nvim`** | `git`, `shell` | `~/.config/nvim/` (LazyVim custom) | `neovim`, `ripgrep`, `fd` |
+| **`cli-tools`** | `shell` | `yazi`, `btop`, `fastfetch`, `mpv`, `thefuck`, `w-disc` | `yazi`, `btop`, `fastfetch`, `mpv` |
 
 ---
 
@@ -30,47 +96,19 @@ alias dotfiles='/usr/bin/git --git-dir=$HOME/.dotfiles.git/ --work-tree=$HOME'
 
 ### Comandos habituales:
 ```bash
-# Ver estado de los archivos trackeados (los no trackeados se ignoran)
+# Ver estado de los archivos trackeados
 dotfiles status
 
-# Añadir un archivo de configuración modificado
-dotfiles add ~/.config/nvim/init.lua
+# Añadir un archivo modificado
+dotfiles add ~/.config/nvim/lua/config/keymaps.lua
 
-# Comprobar que no hay secretos antes de comitear
+# Auditar que no haya credenciales ni secretos antes de commitear
 dotfiles-doctor
 
-# Hacer commit y subir cambios
-dotfiles commit -m "feat(nvim): actualizar plugins"
+# Hacer commit y subir cambios al repo privado
+dotfiles commit -m "feat(nvim): añadir nuevo atajo"
 dotfiles push
+
+# Ver qué módulos/rutas están activos en sparse-checkout
+dotfiles sparse-checkout list
 ```
-
----
-
-## 📦 Instalación y Restauración Automatizada
-
-En un nuevo equipo (o tras formatear), puedes restaurar todo el entorno automáticamente ejecutando:
-
-```bash
-curl -fsSL https://raw.githubusercontent.com/Manel-Romero/dotfiles/main/install-dotfiles.sh | bash
-# O clonando manualmente el bare repo:
-git clone --bare https://github.com/Manel-Romero/dotfiles.git $HOME/.dotfiles.git
-bash $HOME/install-dotfiles.sh
-```
-
-El script `install-dotfiles.sh`:
-1. Clona el repositorio bare si no existe.
-2. Hace backup automático de cualquier archivo preexistente en `~/.dotfiles-backup-<timestamp>/` para evitar colisiones.
-3. Despliega los archivos en `$HOME`.
-4. Configura `status.showUntrackedFiles no`.
-5. Genera plantillas seguras con permisos `600` para `~/.gitconfig.local` y `~/.zshrc.local`.
-6. Compila utilidades necesarias (como `bat_power.c` para Waybar).
-7. Ejecuta el chequeo de seguridad final con `dotfiles-doctor`.
-
----
-
-## 📁 Componentes Incluidos
-
-- **Shell & Terminal:** Zsh (Oh My Zsh, plugins, zoxide, fzf, thefuck), Kitty, Tmux.
-- **Entorno de Escritorio Wayland:** Niri compositor, Waybar, SwayNC, Fuzzel.
-- **Desarrollo:** Neovim (LazyVim custom), Git, Yazi, Btop, Fastfetch, MPV.
-- **Scripts:** `dotfiles-doctor`, `w-disc`, `cliphist-init.sh`, `wallpaper-picker.sh`.

@@ -1,0 +1,14 @@
+[Default Applications]
+x-scheme-handler/discord=vesktop.desktop
+x-scheme-handler/ror2mm=r2modman.desktop
+x-scheme-handler/rpi-imager=com.raspberrypi.rpi-imager-uri-handler.desktop
+application/pdf=mupdf.desktop
+text/plain=nvim.desktop
+image/jpeg=imv.desktop
+x-scheme-handler/antigravity=antigravity.desktop
+
+[Added Associations]
+application/pdf=mupdf.desktop;
+text/plain=nvim.desktop;
+image/jpeg=imv.desktop;
+x-scheme-handler/antigravity=antigravity.desktop;

@@ -1,0 +1,47 @@
+/* Limpieza radical */
+* {
+    all: unset;
+    font-family: "JetBrainsMono Nerd Font";
+    font-size: 13px;
+    color: #e8e8d8;
+}
+
+/* Panel principal */
+.control-center {
+    background: rgba(24, 26, 32, 0.85);
+    border: 1px solid rgba(232, 232, 216, 0.1);
+    border-radius: 15px;
+    margin: 10px;
+    padding: 10px;
+}
+
+/* Notificaciones */
+.notification {
+    background: rgba(24, 26, 32, 0.9);
+    border-radius: 12px;
+    margin: 10px;
+    padding: 15px;
+    border: 1px solid rgba(232, 232, 216, 0.1);
+}
+
+/* --- SOLUCIÓN PARA OCULTAR ICONOS --- */
+/* En lugar de 'display: none', usamos un tamaño de 0px */
+.notification-icon {
+    min-width: 0px;
+    min-height: 0px;
+    padding: 0px;
+    margin: 0px;
+    opacity: 0;
+}
+
+/* Botones */
+button {
+    background: rgba(44, 66, 70, 0.5);
+    border-radius: 8px;
+    padding: 6px 12px;
+    margin: 2px;
+}
+
+button:hover {
+    background: #d45c5b;
+}

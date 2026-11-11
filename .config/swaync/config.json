@@ -1,0 +1,13 @@
+{
+  "positionX": "right",
+  "positionY": "bottom",
+  "layer": "overlay",
+  "control-center-width": 350,
+  "control-center-height": 500,
+  "fit-to-screen": true,
+  "widgets": ["dnd", "notifications"],
+  "widget-config": {
+    "dnd": { "text": "No molestar" },
+    "notifications": { "clear-on-dismiss": true }
+  }
+}

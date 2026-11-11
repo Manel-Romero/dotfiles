@@ -1,0 +1,89 @@
+#!/usr/bin/env bash
+set -e
+
+# --- Config ---
+USER_UPV="${USER_UPV:-mromalv}"
+MOUNT_POINT="/mnt/w-disc"
+PASS_ENTRY="upv/alumno"
+# --------------
+
+INITIAL="${USER_UPV:0:1}"
+REMOTE_PATH="//nasupv.upv.es/alumnos/${INITIAL}/${USER_UPV}"
+
+is_mounted() {
+    mountpoint -q "$MOUNT_POINT"
+}
+
+mount_disc() {
+    if is_mounted; then
+        echo "=> Already mounted at $MOUNT_POINT."
+        exit 0
+    fi
+
+    echo "Getting pass credentials..."
+    PASS=$(pass show "$PASS_ENTRY" | head -n 1)
+    if [ -z "$PASS" ]; then
+        echo "Error: Unable to get password from pass ($PASS_ENTRY)." >&2
+        exit 1
+    fi
+
+    sudo mkdir -p "$MOUNT_POINT"
+
+    CREDFILE=$(mktemp /dev/shm/.cifs_cred.XXXXXX)
+    chmod 600 "$CREDFILE"
+    cat << CRED_EOF > "$CREDFILE"
+username=${USER_UPV}
+password=${PASS}
+domain=alumno
+CRED_EOF
+
+    echo "Mounting $REMOTE_PATH at $MOUNT_POINT..."
+    sudo mount -t cifs "$REMOTE_PATH" "$MOUNT_POINT" \
+        -o "uid=$(id -u),gid=$(id -g),file_mode=0644,dir_mode=0755,credentials=${CREDFILE},vers=3.0,sec=ntlmssp"
+
+    rm -f "$CREDFILE"
+    echo "Mounted successfully at $MOUNT_POINT"
+}
+
+unmount_disc() {
+    if ! is_mounted; then
+        echo "=> Disk not mounted."
+        exit 0
+    fi
+
+    echo "Unmounting $MOUNT_POINT..."
+    sudo umount "$MOUNT_POINT"
+    echo "Unmounted successfully."
+}
+
+toggle_disc() {
+    if is_mounted; then
+        unmount_disc
+    else
+        mount_disc
+    fi
+}
+
+case "$1" in
+    mount|m)
+        mount_disc
+        ;;
+    unmount|umount|u)
+        unmount_disc
+        ;;
+    status|s)
+        if is_mounted; then
+            echo "Status: MOUNTED at $MOUNT_POINT"
+            findmnt "$MOUNT_POINT"
+        else
+            echo "Status: UNMOUNTED"
+        fi
+        ;;
+    toggle|t|"")
+        toggle_disc
+        ;;
+    *)
+        echo "Usage: $(basename "$0") [mount|unmount|status|toggle]"
+        exit 1
+        ;;
+esac

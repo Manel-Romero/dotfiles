@@ -1,0 +1,94 @@
+# ==============================================================================
+# Global Dotfiles Gitignore (~/.gitignore)
+# Designed for Bare Repository Dotfiles Management
+# ==============================================================================
+
+# ------------------------------------------------------------------------------
+# SSH & GPG / Secrets & Passwords
+# ------------------------------------------------------------------------------
+.ssh/
+.gnupg/
+.password-store/
+
+# ------------------------------------------------------------------------------
+# PKI, SSL Certificates & Private Keys
+# ------------------------------------------------------------------------------
+.pki/
+.mitmproxy/
+**/*.pem
+**/*.key
+**/*.keystore
+**/*.p12
+**/*.pfx
+.config/InputLeap/SSL/
+.config/lamco-rdp-server/
+.config/freerdp/server/
+
+# ------------------------------------------------------------------------------
+# Tokens, Sessions, Cloud & Remote Credentials
+# ------------------------------------------------------------------------------
+.config/gh/hosts.yml
+.config/msga/
+.config/miupv/
+.config/wayspot-lyrics/config.toml
+.config/remmina/
+.local/share/remmina/
+.config/app.moosync.moosync/
+.aws/
+.gemini/
+.android/
+.copilot/
+.antigravity-ide/
+
+# Local Overrides & Environment Files (Machine-Specific)
+*.local
+!/.local/
+!/.local/bin/
+*.local.*
+*.env
+*.env.*
+.zshrc.local
+.gitconfig.local
+.bashrc.local
+
+# ------------------------------------------------------------------------------
+# Shell & Tool Histories, Dumps & Logs
+# ------------------------------------------------------------------------------
+.*_history
+*.history
+*-history.txt
+*.log
+.wget-hsts
+.zcompdump*
+.config/ffuf/history/
+.config/NTInfo/
+.config/qBittorrent/
+
+# ------------------------------------------------------------------------------
+# Browser, Electron & Application State / Caches
+# ------------------------------------------------------------------------------
+.config/zen/
+.config/mozilla/
+.config/vesktop/
+.config/spotify/
+.config/obsidian/
+.config/Trae/
+.config/Code - OSS/
+.config/dconf/
+.config/pulse/cookie
+.cache/
+.local/state/
+.local/share/Trash/
+
+# ------------------------------------------------------------------------------
+# Build Artifacts, Compiled Binaries & Editor Swaps
+# ------------------------------------------------------------------------------
+bat_power
+__pycache__/
+*.o
+*.so
+*.bak
+*.swp
+*.swo
+*~
+.~lock.*

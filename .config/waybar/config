@@ -1,0 +1,86 @@
+{
+    "layer": "top",
+    "position": "top",
+    "exclusive": true,
+    "passthrough": false,
+    "height": 34,
+    "spacing": 4,
+    "modules-left": [
+        "niri/workspaces",
+        "custom/wayspot-lyrics"
+    ],
+    "modules-center": [
+        "clock"
+    ],
+
+    "modules-right": [
+        "tray",
+        "pulseaudio",
+        "network",
+        "battery"
+    ],
+
+    "niri/workspaces": {
+        "format": "{icon}",
+        "format-icons": {
+            "active": "",
+            "default": ""
+        }
+    },
+
+    "niri/window": {
+        "format": "{title}",
+        "max-length": 50
+    },
+
+    "clock": {
+        "tooltip-format": "<big>{:%Y %B}</big>\n<tt><small>{calendar}</small></tt>",
+        "format-alt": "{:%Y-%m-%d}"
+    },
+
+    "tray": {
+    "icon-size": 14,
+    "spacing": 7
+    },
+
+    "pulseaudio": {
+        "format": "{volume}% {icon} ",
+        "format-bluetooth": "{volume}% {icon}",
+        "format-muted": "",
+        "format-icons": {
+            "default": ["", ""]
+        },
+        "on-click": "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle"
+    },
+
+    "network": {
+    "interface": "wlan0",
+    "format-wifi": "{essid}  ",
+    "format-ethernet": "󰈀  {ipaddr}",
+    "format-linked": "{ifname} 󰤭 (No IP)",
+    "format-disconnected": "Disconnected 󰤭 ",
+    "tooltip-format-wifi": "{essid} | {ifname} ({ipaddr})",
+    "tooltip-format-disconnected": "Disconnected",
+    "max-length": 30
+    },
+
+    "battery": {
+        "states": {
+            "warning": 30,
+            "critical": 15
+        },
+        "format": "{capacity}% {icon}",
+        "format-icons": ["", "", "", "", ""]
+    },
+    
+    "custom/wayspot-lyrics": {
+        "exec": "wayspot-lyrics",
+        "return-type": "json",
+        "restart-interval": 1,
+        "tooltip": true,
+        "escape": true,
+        "on-click": "playerctl -p spotify play-pause",
+        "on-click-right": "playerctl -p spotify next",
+        "on-click-middle": "playerctl -p spotify previous"
+    }
+}

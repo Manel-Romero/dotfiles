@@ -1,0 +1,9 @@
+[[manager.prepend_keymap]]
+on   = [ "f" ]
+run  = "shell 'nsxiv \"$@\"' --block"
+desc = "Abrir con nsxiv"
+
+[[manager.prepend_keymap]]
+on   = [ "m" ]
+run  = "shell 'mpv \"$@\"' --block"
+desc = "Abrir con mpv"

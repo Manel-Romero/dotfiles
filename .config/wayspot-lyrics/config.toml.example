@@ -1,0 +1,2 @@
+# Spotify cookie (keep private, do not commit config.toml)
+sp_dc = "YOUR_SP_DC_COOKIE_HERE"

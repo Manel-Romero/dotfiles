@@ -1,0 +1,16 @@
+[manager]
+prepend_find_command = "fd"
+prepend_search_command = "rg"
+
+[opener]
+open = [
+    { run = 'nsxiv "$1"', desc = "Imagen", for = "unix" },
+    { run = 'mupdf "$1"', desc = "PDF", for = "unix" },
+    { run = 'mpv "$1"', desc = "Video", for = "unix" },
+    { run = 'nvim "$1"', desc = "Texto", for = "unix" },
+]
+
+[preview]
+image_filter = "triangle"
+image_quality = 75
+tab_size = 2

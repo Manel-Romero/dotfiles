@@ -1,0 +1,1515 @@
+#compdef miupv
+
+autoload -U is-at-least
+
+_miupv() {
+    typeset -A opt_args
+    typeset -a _arguments_options
+    local ret=1
+
+    if is-at-least 5.2; then
+        _arguments_options=(-s -S -C)
+    else
+        _arguments_options=(-s -C)
+    fi
+
+    local context curcontext="$curcontext" state line
+    _arguments "${_arguments_options[@]}" : \
+'-l+[Idioma preferido para las respuestas del servidor (es, ca, en)]:LANG:_default' \
+'--lang=[Idioma preferido para las respuestas del servidor (es, ca, en)]:LANG:_default' \
+'-j[Formato de salida en JSON (para scripts e integraciones)]' \
+'--json[Formato de salida en JSON (para scripts e integraciones)]' \
+'-h[Print help (see more with '\''--help'\'')]' \
+'--help[Print help (see more with '\''--help'\'')]' \
+'-V[Print version]' \
+'--version[Print version]' \
+":: :_miupv_commands" \
+"*::: :->miupv" \
+&& ret=0
+    case $state in
+    (miupv)
+        words=($line[1] "${words[@]}")
+        (( CURRENT += 1 ))
+        curcontext="${curcontext%:*:*}:miupv-command-$line[1]:"
+        case $line[1] in
+            (login)
+_arguments "${_arguments_options[@]}" : \
+'-u+[Nombre de usuario o DNI]:USERNAME:_default' \
+'--username=[Nombre de usuario o DNI]:USERNAME:_default' \
+'-p+[Contraseña institucional]:PASSWORD:_default' \
+'--password=[Contraseña institucional]:PASSWORD:_default' \
+'-t+[Iniciar sesión pasando directamente un token extraído de la app oficial o web]:TOKEN:_default' \
+'--token=[Iniciar sesión pasando directamente un token extraído de la app oficial o web]:TOKEN:_default' \
+'-l+[Idioma preferido para las respuestas del servidor (es, ca, en)]:LANG:_default' \
+'--lang=[Idioma preferido para las respuestas del servidor (es, ca, en)]:LANG:_default' \
+'--pkce[Forzar autenticación vía OAuth PKCE oficial (siupv.upv.es)]' \
+'-j[Formato de salida en JSON (para scripts e integraciones)]' \
+'--json[Formato de salida en JSON (para scripts e integraciones)]' \
+'-h[Print help]' \
+'--help[Print help]' \
+&& ret=0
+;;
+(auth)
+_arguments "${_arguments_options[@]}" : \
+'-l+[Idioma preferido para las respuestas del servidor (es, ca, en)]:LANG:_default' \
+'--lang=[Idioma preferido para las respuestas del servidor (es, ca, en)]:LANG:_default' \
+'-j[Formato de salida en JSON (para scripts e integraciones)]' \
+'--json[Formato de salida en JSON (para scripts e integraciones)]' \
+'-h[Print help]' \
+'--help[Print help]' \
+":: :_miupv__subcmd__auth_commands" \
+"*::: :->auth" \
+&& ret=0
+
+    case $state in
+    (auth)
+        words=($line[1] "${words[@]}")
+        (( CURRENT += 1 ))
+        curcontext="${curcontext%:*:*}:miupv-auth-command-$line[1]:"
+        case $line[1] in
+            (set-token)
+_arguments "${_arguments_options[@]}" : \
+'-r+[Token de refresco opcional]:REFRESH_TOKEN:_default' \
+'--refresh-token=[Token de refresco opcional]:REFRESH_TOKEN:_default' \
+'-t+[Tiempo de validez en segundos (por defecto 3600 o 28800 según el tipo)]:TTL:_default' \
+'--ttl=[Tiempo de validez en segundos (por defecto 3600 o 28800 según el tipo)]:TTL:_default' \
+'-l+[Idioma preferido para las respuestas del servidor (es, ca, en)]:LANG:_default' \
+'--lang=[Idioma preferido para las respuestas del servidor (es, ca, en)]:LANG:_default' \
+'-j[Formato de salida en JSON (para scripts e integraciones)]' \
+'--json[Formato de salida en JSON (para scripts e integraciones)]' \
+'-h[Print help]' \
+'--help[Print help]' \
+':token -- Token de acceso (Bearer token o cookie TDp):_default' \
+&& ret=0
+;;
+(renew)
+_arguments "${_arguments_options[@]}" : \
+'-l+[Idioma preferido para las respuestas del servidor (es, ca, en)]:LANG:_default' \
+'--lang=[Idioma preferido para las respuestas del servidor (es, ca, en)]:LANG:_default' \
+'-j[Formato de salida en JSON (para scripts e integraciones)]' \
+'--json[Formato de salida en JSON (para scripts e integraciones)]' \
+'-h[Print help]' \
+'--help[Print help]' \
+&& ret=0
+;;
+(status)
+_arguments "${_arguments_options[@]}" : \
+'-l+[Idioma preferido para las respuestas del servidor (es, ca, en)]:LANG:_default' \
+'--lang=[Idioma preferido para las respuestas del servidor (es, ca, en)]:LANG:_default' \
+'-j[Formato de salida en JSON (para scripts e integraciones)]' \
+'--json[Formato de salida en JSON (para scripts e integraciones)]' \
+'-h[Print help]' \
+'--help[Print help]' \
+&& ret=0
+;;
+(clear)
+_arguments "${_arguments_options[@]}" : \
+'-l+[Idioma preferido para las respuestas del servidor (es, ca, en)]:LANG:_default' \
+'--lang=[Idioma preferido para las respuestas del servidor (es, ca, en)]:LANG:_default' \
+'-j[Formato de salida en JSON (para scripts e integraciones)]' \
+'--json[Formato de salida en JSON (para scripts e integraciones)]' \
+'-h[Print help]' \
+'--help[Print help]' \
+&& ret=0
+;;
+(help)
+_arguments "${_arguments_options[@]}" : \
+":: :_miupv__subcmd__auth__subcmd__help_commands" \
+"*::: :->help" \
+&& ret=0
+
+    case $state in
+    (help)
+        words=($line[1] "${words[@]}")
+        (( CURRENT += 1 ))
+        curcontext="${curcontext%:*:*}:miupv-auth-help-command-$line[1]:"
+        case $line[1] in
+            (set-token)
+_arguments "${_arguments_options[@]}" : \
+&& ret=0
+;;
+(renew)
+_arguments "${_arguments_options[@]}" : \
+&& ret=0
+;;
+(status)
+_arguments "${_arguments_options[@]}" : \
+&& ret=0
+;;
+(clear)
+_arguments "${_arguments_options[@]}" : \
+&& ret=0
+;;
+(help)
+_arguments "${_arguments_options[@]}" : \
+&& ret=0
+;;
+        esac
+    ;;
+esac
+;;
+        esac
+    ;;
+esac
+;;
+(logout)
+_arguments "${_arguments_options[@]}" : \
+'-l+[Idioma preferido para las respuestas del servidor (es, ca, en)]:LANG:_default' \
+'--lang=[Idioma preferido para las respuestas del servidor (es, ca, en)]:LANG:_default' \
+'-j[Formato de salida en JSON (para scripts e integraciones)]' \
+'--json[Formato de salida en JSON (para scripts e integraciones)]' \
+'-h[Print help]' \
+'--help[Print help]' \
+&& ret=0
+;;
+(perfil)
+_arguments "${_arguments_options[@]}" : \
+'-l+[Idioma preferido para las respuestas del servidor (es, ca, en)]:LANG:_default' \
+'--lang=[Idioma preferido para las respuestas del servidor (es, ca, en)]:LANG:_default' \
+'-j[Formato de salida en JSON (para scripts e integraciones)]' \
+'--json[Formato de salida en JSON (para scripts e integraciones)]' \
+'-h[Print help]' \
+'--help[Print help]' \
+&& ret=0
+;;
+(notas)
+_arguments "${_arguments_options[@]}" : \
+'-c+[Año académico a consultar (ej\: 2024 para el curso 2024-2025)]:CURSO:_default' \
+'--curso=[Año académico a consultar (ej\: 2024 para el curso 2024-2025)]:CURSO:_default' \
+'-l+[Idioma preferido para las respuestas del servidor (es, ca, en)]:LANG:_default' \
+'--lang=[Idioma preferido para las respuestas del servidor (es, ca, en)]:LANG:_default' \
+'--json[Formato de salida en JSON]' \
+'-h[Print help]' \
+'--help[Print help]' \
+&& ret=0
+;;
+(tareas)
+_arguments "${_arguments_options[@]}" : \
+'-s+[Filtrar por asignatura o identificador de sitio]:SITE:_default' \
+'--site=[Filtrar por asignatura o identificador de sitio]:SITE:_default' \
+'-l+[Idioma preferido para las respuestas del servidor (es, ca, en)]:LANG:_default' \
+'--lang=[Idioma preferido para las respuestas del servidor (es, ca, en)]:LANG:_default' \
+'-a[Incluir tareas ya entregadas o calificadas]' \
+'--all[Incluir tareas ya entregadas o calificadas]' \
+'-j[Formato de salida en JSON (para scripts e integraciones)]' \
+'--json[Formato de salida en JSON (para scripts e integraciones)]' \
+'-h[Print help]' \
+'--help[Print help]' \
+&& ret=0
+;;
+(avisos)
+_arguments "${_arguments_options[@]}" : \
+'-n+[Número máximo de avisos a mostrar]:N:_default' \
+'--n=[Número máximo de avisos a mostrar]:N:_default' \
+'-l+[Idioma preferido para las respuestas del servidor (es, ca, en)]:LANG:_default' \
+'--lang=[Idioma preferido para las respuestas del servidor (es, ca, en)]:LANG:_default' \
+'-j[Formato de salida en JSON (para scripts e integraciones)]' \
+'--json[Formato de salida en JSON (para scripts e integraciones)]' \
+'-h[Print help]' \
+'--help[Print help]' \
+&& ret=0
+;;
+(calendario)
+_arguments "${_arguments_options[@]}" : \
+'-l+[Idioma preferido para las respuestas del servidor (es, ca, en)]:LANG:_default' \
+'--lang=[Idioma preferido para las respuestas del servidor (es, ca, en)]:LANG:_default' \
+'-j[Formato de salida en JSON (para scripts e integraciones)]' \
+'--json[Formato de salida en JSON (para scripts e integraciones)]' \
+'-h[Print help]' \
+'--help[Print help]' \
+":: :_miupv__subcmd__calendario_commands" \
+"*::: :->calendario" \
+&& ret=0
+
+    case $state in
+    (calendario)
+        words=($line[1] "${words[@]}")
+        (( CURRENT += 1 ))
+        curcontext="${curcontext%:*:*}:miupv-calendario-command-$line[1]:"
+        case $line[1] in
+            (ver)
+_arguments "${_arguments_options[@]}" : \
+'-l+[Idioma preferido para las respuestas del servidor (es, ca, en)]:LANG:_default' \
+'--lang=[Idioma preferido para las respuestas del servidor (es, ca, en)]:LANG:_default' \
+'-j[Formato de salida en JSON (para scripts e integraciones)]' \
+'--json[Formato de salida en JSON (para scripts e integraciones)]' \
+'-h[Print help]' \
+'--help[Print help]' \
+&& ret=0
+;;
+(export)
+_arguments "${_arguments_options[@]}" : \
+'-o+[Ruta del archivo .ics de salida]:OUT:_default' \
+'--out=[Ruta del archivo .ics de salida]:OUT:_default' \
+'--ini=[Fecha de inicio (YYYY-MM-DD, por defecto 30 días antes de hoy)]:INI:_default' \
+'--fin=[Fecha de fin (YYYY-MM-DD, por defecto 120 días después de hoy)]:FIN:_default' \
+'-l+[Idioma preferido para las respuestas del servidor (es, ca, en)]:LANG:_default' \
+'--lang=[Idioma preferido para las respuestas del servidor (es, ca, en)]:LANG:_default' \
+'-j[Formato de salida en JSON (para scripts e integraciones)]' \
+'--json[Formato de salida en JSON (para scripts e integraciones)]' \
+'-h[Print help]' \
+'--help[Print help]' \
+&& ret=0
+;;
+(help)
+_arguments "${_arguments_options[@]}" : \
+":: :_miupv__subcmd__calendario__subcmd__help_commands" \
+"*::: :->help" \
+&& ret=0
+
+    case $state in
+    (help)
+        words=($line[1] "${words[@]}")
+        (( CURRENT += 1 ))
+        curcontext="${curcontext%:*:*}:miupv-calendario-help-command-$line[1]:"
+        case $line[1] in
+            (ver)
+_arguments "${_arguments_options[@]}" : \
+&& ret=0
+;;
+(export)
+_arguments "${_arguments_options[@]}" : \
+&& ret=0
+;;
+(help)
+_arguments "${_arguments_options[@]}" : \
+&& ret=0
+;;
+        esac
+    ;;
+esac
+;;
+        esac
+    ;;
+esac
+;;
+(cabinas)
+_arguments "${_arguments_options[@]}" : \
+'-f+[Fecha a consultar (YYYY-MM-DD, por defecto hoy)]:FECHA:_default' \
+'--fecha=[Fecha a consultar (YYYY-MM-DD, por defecto hoy)]:FECHA:_default' \
+'-l+[Idioma preferido para las respuestas del servidor (es, ca, en)]:LANG:_default' \
+'--lang=[Idioma preferido para las respuestas del servidor (es, ca, en)]:LANG:_default' \
+'-j[Formato de salida en JSON (para scripts e integraciones)]' \
+'--json[Formato de salida en JSON (para scripts e integraciones)]' \
+'-h[Print help]' \
+'--help[Print help]' \
+":: :_miupv__subcmd__cabinas_commands" \
+"*::: :->cabinas" \
+&& ret=0
+
+    case $state in
+    (cabinas)
+        words=($line[1] "${words[@]}")
+        (( CURRENT += 1 ))
+        curcontext="${curcontext%:*:*}:miupv-cabinas-command-$line[1]:"
+        case $line[1] in
+            (reservar)
+_arguments "${_arguments_options[@]}" : \
+'-i+[Identificador de la franja a reservar]:ID:_default' \
+'--id=[Identificador de la franja a reservar]:ID:_default' \
+'-l+[Idioma preferido para las respuestas del servidor (es, ca, en)]:LANG:_default' \
+'--lang=[Idioma preferido para las respuestas del servidor (es, ca, en)]:LANG:_default' \
+'-j[Formato de salida en JSON (para scripts e integraciones)]' \
+'--json[Formato de salida en JSON (para scripts e integraciones)]' \
+'-h[Print help]' \
+'--help[Print help]' \
+&& ret=0
+;;
+(mis-reservas)
+_arguments "${_arguments_options[@]}" : \
+'-l+[Idioma preferido para las respuestas del servidor (es, ca, en)]:LANG:_default' \
+'--lang=[Idioma preferido para las respuestas del servidor (es, ca, en)]:LANG:_default' \
+'-j[Formato de salida en JSON (para scripts e integraciones)]' \
+'--json[Formato de salida en JSON (para scripts e integraciones)]' \
+'-h[Print help]' \
+'--help[Print help]' \
+&& ret=0
+;;
+(liberar)
+_arguments "${_arguments_options[@]}" : \
+'-i+[Identificador de la franja o reserva a cancelar]:ID:_default' \
+'--id=[Identificador de la franja o reserva a cancelar]:ID:_default' \
+'-l+[Idioma preferido para las respuestas del servidor (es, ca, en)]:LANG:_default' \
+'--lang=[Idioma preferido para las respuestas del servidor (es, ca, en)]:LANG:_default' \
+'-j[Formato de salida en JSON (para scripts e integraciones)]' \
+'--json[Formato de salida en JSON (para scripts e integraciones)]' \
+'-h[Print help]' \
+'--help[Print help]' \
+&& ret=0
+;;
+(help)
+_arguments "${_arguments_options[@]}" : \
+":: :_miupv__subcmd__cabinas__subcmd__help_commands" \
+"*::: :->help" \
+&& ret=0
+
+    case $state in
+    (help)
+        words=($line[1] "${words[@]}")
+        (( CURRENT += 1 ))
+        curcontext="${curcontext%:*:*}:miupv-cabinas-help-command-$line[1]:"
+        case $line[1] in
+            (reservar)
+_arguments "${_arguments_options[@]}" : \
+&& ret=0
+;;
+(mis-reservas)
+_arguments "${_arguments_options[@]}" : \
+&& ret=0
+;;
+(liberar)
+_arguments "${_arguments_options[@]}" : \
+&& ret=0
+;;
+(help)
+_arguments "${_arguments_options[@]}" : \
+&& ret=0
+;;
+        esac
+    ;;
+esac
+;;
+        esac
+    ;;
+esac
+;;
+(deportes)
+_arguments "${_arguments_options[@]}" : \
+'-l+[Idioma preferido para las respuestas del servidor (es, ca, en)]:LANG:_default' \
+'--lang=[Idioma preferido para las respuestas del servidor (es, ca, en)]:LANG:_default' \
+'-j[Formato de salida en JSON (para scripts e integraciones)]' \
+'--json[Formato de salida en JSON (para scripts e integraciones)]' \
+'-h[Print help]' \
+'--help[Print help]' \
+":: :_miupv__subcmd__deportes_commands" \
+"*::: :->deportes" \
+&& ret=0
+
+    case $state in
+    (deportes)
+        words=($line[1] "${words[@]}")
+        (( CURRENT += 1 ))
+        curcontext="${curcontext%:*:*}:miupv-deportes-command-$line[1]:"
+        case $line[1] in
+            (mis-reservas)
+_arguments "${_arguments_options[@]}" : \
+'-l+[Idioma preferido para las respuestas del servidor (es, ca, en)]:LANG:_default' \
+'--lang=[Idioma preferido para las respuestas del servidor (es, ca, en)]:LANG:_default' \
+'-j[Formato de salida en JSON (para scripts e integraciones)]' \
+'--json[Formato de salida en JSON (para scripts e integraciones)]' \
+'-h[Print help]' \
+'--help[Print help]' \
+&& ret=0
+;;
+(lista)
+_arguments "${_arguments_options[@]}" : \
+'-c+[Campus universitario (ej\: vera, gandia, alcoi)]:CAMPUS:_default' \
+'--campus=[Campus universitario (ej\: vera, gandia, alcoi)]:CAMPUS:_default' \
+'-l+[Idioma preferido para las respuestas del servidor (es, ca, en)]:LANG:_default' \
+'--lang=[Idioma preferido para las respuestas del servidor (es, ca, en)]:LANG:_default' \
+'-j[Formato de salida en JSON (para scripts e integraciones)]' \
+'--json[Formato de salida en JSON (para scripts e integraciones)]' \
+'-h[Print help]' \
+'--help[Print help]' \
+&& ret=0
+;;
+(disponibles)
+_arguments "${_arguments_options[@]}" : \
+'-c+[Campus universitario (ej\: vera, gandia, alcoi)]:CAMPUS:_default' \
+'--campus=[Campus universitario (ej\: vera, gandia, alcoi)]:CAMPUS:_default' \
+'-d+[Modalidad deportiva (ej\: baloncesto, padel, tenis, futbol, o ID numérico)]:DEPORTE:_default' \
+'--deporte=[Modalidad deportiva (ej\: baloncesto, padel, tenis, futbol, o ID numérico)]:DEPORTE:_default' \
+'-f+[Fecha a consultar (YYYY-MM-DD o YYYYMMDD, por defecto hoy)]:FECHA:_default' \
+'--fecha=[Fecha a consultar (YYYY-MM-DD o YYYYMMDD, por defecto hoy)]:FECHA:_default' \
+'-l+[Idioma preferido para las respuestas del servidor (es, ca, en)]:LANG:_default' \
+'--lang=[Idioma preferido para las respuestas del servidor (es, ca, en)]:LANG:_default' \
+'-j[Formato de salida en JSON (para scripts e integraciones)]' \
+'--json[Formato de salida en JSON (para scripts e integraciones)]' \
+'-h[Print help]' \
+'--help[Print help]' \
+&& ret=0
+;;
+(help)
+_arguments "${_arguments_options[@]}" : \
+":: :_miupv__subcmd__deportes__subcmd__help_commands" \
+"*::: :->help" \
+&& ret=0
+
+    case $state in
+    (help)
+        words=($line[1] "${words[@]}")
+        (( CURRENT += 1 ))
+        curcontext="${curcontext%:*:*}:miupv-deportes-help-command-$line[1]:"
+        case $line[1] in
+            (mis-reservas)
+_arguments "${_arguments_options[@]}" : \
+&& ret=0
+;;
+(lista)
+_arguments "${_arguments_options[@]}" : \
+&& ret=0
+;;
+(disponibles)
+_arguments "${_arguments_options[@]}" : \
+&& ret=0
+;;
+(help)
+_arguments "${_arguments_options[@]}" : \
+&& ret=0
+;;
+        esac
+    ;;
+esac
+;;
+        esac
+    ;;
+esac
+;;
+(tutorias)
+_arguments "${_arguments_options[@]}" : \
+'-l+[Idioma preferido para las respuestas del servidor (es, ca, en)]:LANG:_default' \
+'--lang=[Idioma preferido para las respuestas del servidor (es, ca, en)]:LANG:_default' \
+'-j[Formato de salida en JSON (para scripts e integraciones)]' \
+'--json[Formato de salida en JSON (para scripts e integraciones)]' \
+'-h[Print help]' \
+'--help[Print help]' \
+":: :_miupv__subcmd__tutorias_commands" \
+"*::: :->tutorias" \
+&& ret=0
+
+    case $state in
+    (tutorias)
+        words=($line[1] "${words[@]}")
+        (( CURRENT += 1 ))
+        curcontext="${curcontext%:*:*}:miupv-tutorias-command-$line[1]:"
+        case $line[1] in
+            (asignaturas)
+_arguments "${_arguments_options[@]}" : \
+'-l+[Idioma preferido para las respuestas del servidor (es, ca, en)]:LANG:_default' \
+'--lang=[Idioma preferido para las respuestas del servidor (es, ca, en)]:LANG:_default' \
+'-j[Formato de salida en JSON (para scripts e integraciones)]' \
+'--json[Formato de salida en JSON (para scripts e integraciones)]' \
+'-h[Print help]' \
+'--help[Print help]' \
+&& ret=0
+;;
+(help)
+_arguments "${_arguments_options[@]}" : \
+":: :_miupv__subcmd__tutorias__subcmd__help_commands" \
+"*::: :->help" \
+&& ret=0
+
+    case $state in
+    (help)
+        words=($line[1] "${words[@]}")
+        (( CURRENT += 1 ))
+        curcontext="${curcontext%:*:*}:miupv-tutorias-help-command-$line[1]:"
+        case $line[1] in
+            (asignaturas)
+_arguments "${_arguments_options[@]}" : \
+&& ret=0
+;;
+(help)
+_arguments "${_arguments_options[@]}" : \
+&& ret=0
+;;
+        esac
+    ;;
+esac
+;;
+        esac
+    ;;
+esac
+;;
+(carnet)
+_arguments "${_arguments_options[@]}" : \
+'-l+[Idioma preferido para las respuestas del servidor (es, ca, en)]:LANG:_default' \
+'--lang=[Idioma preferido para las respuestas del servidor (es, ca, en)]:LANG:_default' \
+'-j[Formato de salida en JSON (para scripts e integraciones)]' \
+'--json[Formato de salida en JSON (para scripts e integraciones)]' \
+'-h[Print help]' \
+'--help[Print help]' \
+":: :_miupv__subcmd__carnet_commands" \
+"*::: :->carnet" \
+&& ret=0
+
+    case $state in
+    (carnet)
+        words=($line[1] "${words[@]}")
+        (( CURRENT += 1 ))
+        curcontext="${curcontext%:*:*}:miupv-carnet-command-$line[1]:"
+        case $line[1] in
+            (info)
+_arguments "${_arguments_options[@]}" : \
+'-l+[Idioma preferido para las respuestas del servidor (es, ca, en)]:LANG:_default' \
+'--lang=[Idioma preferido para las respuestas del servidor (es, ca, en)]:LANG:_default' \
+'-j[Formato de salida en JSON (para scripts e integraciones)]' \
+'--json[Formato de salida en JSON (para scripts e integraciones)]' \
+'-h[Print help]' \
+'--help[Print help]' \
+&& ret=0
+;;
+(qr)
+_arguments "${_arguments_options[@]}" : \
+'-l+[Idioma preferido para las respuestas del servidor (es, ca, en)]:LANG:_default' \
+'--lang=[Idioma preferido para las respuestas del servidor (es, ca, en)]:LANG:_default' \
+'-j[Formato de salida en JSON (para scripts e integraciones)]' \
+'--json[Formato de salida en JSON (para scripts e integraciones)]' \
+'-h[Print help]' \
+'--help[Print help]' \
+&& ret=0
+;;
+(help)
+_arguments "${_arguments_options[@]}" : \
+":: :_miupv__subcmd__carnet__subcmd__help_commands" \
+"*::: :->help" \
+&& ret=0
+
+    case $state in
+    (help)
+        words=($line[1] "${words[@]}")
+        (( CURRENT += 1 ))
+        curcontext="${curcontext%:*:*}:miupv-carnet-help-command-$line[1]:"
+        case $line[1] in
+            (info)
+_arguments "${_arguments_options[@]}" : \
+&& ret=0
+;;
+(qr)
+_arguments "${_arguments_options[@]}" : \
+&& ret=0
+;;
+(help)
+_arguments "${_arguments_options[@]}" : \
+&& ret=0
+;;
+        esac
+    ;;
+esac
+;;
+        esac
+    ;;
+esac
+;;
+(wol)
+_arguments "${_arguments_options[@]}" : \
+'-l+[Idioma preferido para las respuestas del servidor (es, ca, en)]:LANG:_default' \
+'--lang=[Idioma preferido para las respuestas del servidor (es, ca, en)]:LANG:_default' \
+'-j[Formato de salida en JSON (para scripts e integraciones)]' \
+'--json[Formato de salida en JSON (para scripts e integraciones)]' \
+'-h[Print help]' \
+'--help[Print help]' \
+":: :_miupv__subcmd__wol_commands" \
+"*::: :->wol" \
+&& ret=0
+
+    case $state in
+    (wol)
+        words=($line[1] "${words[@]}")
+        (( CURRENT += 1 ))
+        curcontext="${curcontext%:*:*}:miupv-wol-command-$line[1]:"
+        case $line[1] in
+            (lista)
+_arguments "${_arguments_options[@]}" : \
+'-l+[Idioma preferido para las respuestas del servidor (es, ca, en)]:LANG:_default' \
+'--lang=[Idioma preferido para las respuestas del servidor (es, ca, en)]:LANG:_default' \
+'-j[Formato de salida en JSON (para scripts e integraciones)]' \
+'--json[Formato de salida en JSON (para scripts e integraciones)]' \
+'-h[Print help]' \
+'--help[Print help]' \
+&& ret=0
+;;
+(despertar)
+_arguments "${_arguments_options[@]}" : \
+'-e+[Identificador o código del equipo a despertar (ej\: LAB-01)]:EQUIPO:_default' \
+'--equipo=[Identificador o código del equipo a despertar (ej\: LAB-01)]:EQUIPO:_default' \
+'-l+[Idioma preferido para las respuestas del servidor (es, ca, en)]:LANG:_default' \
+'--lang=[Idioma preferido para las respuestas del servidor (es, ca, en)]:LANG:_default' \
+'-j[Formato de salida en JSON (para scripts e integraciones)]' \
+'--json[Formato de salida en JSON (para scripts e integraciones)]' \
+'-h[Print help]' \
+'--help[Print help]' \
+&& ret=0
+;;
+(help)
+_arguments "${_arguments_options[@]}" : \
+":: :_miupv__subcmd__wol__subcmd__help_commands" \
+"*::: :->help" \
+&& ret=0
+
+    case $state in
+    (help)
+        words=($line[1] "${words[@]}")
+        (( CURRENT += 1 ))
+        curcontext="${curcontext%:*:*}:miupv-wol-help-command-$line[1]:"
+        case $line[1] in
+            (lista)
+_arguments "${_arguments_options[@]}" : \
+&& ret=0
+;;
+(despertar)
+_arguments "${_arguments_options[@]}" : \
+&& ret=0
+;;
+(help)
+_arguments "${_arguments_options[@]}" : \
+&& ret=0
+;;
+        esac
+    ;;
+esac
+;;
+        esac
+    ;;
+esac
+;;
+(completions)
+_arguments "${_arguments_options[@]}" : \
+'-l+[Idioma preferido para las respuestas del servidor (es, ca, en)]:LANG:_default' \
+'--lang=[Idioma preferido para las respuestas del servidor (es, ca, en)]:LANG:_default' \
+'-i[Instalar automáticamente en los directorios de autocompletado del sistema]' \
+'--install[Instalar automáticamente en los directorios de autocompletado del sistema]' \
+'-j[Formato de salida en JSON (para scripts e integraciones)]' \
+'--json[Formato de salida en JSON (para scripts e integraciones)]' \
+'-h[Print help]' \
+'--help[Print help]' \
+'::shell -- Shell para la que generar el autocompletado (bash, zsh, fish, powershell, elvish):(bash elvish fish powershell zsh)' \
+&& ret=0
+;;
+(help)
+_arguments "${_arguments_options[@]}" : \
+":: :_miupv__subcmd__help_commands" \
+"*::: :->help" \
+&& ret=0
+
+    case $state in
+    (help)
+        words=($line[1] "${words[@]}")
+        (( CURRENT += 1 ))
+        curcontext="${curcontext%:*:*}:miupv-help-command-$line[1]:"
+        case $line[1] in
+            (login)
+_arguments "${_arguments_options[@]}" : \
+&& ret=0
+;;
+(auth)
+_arguments "${_arguments_options[@]}" : \
+":: :_miupv__subcmd__help__subcmd__auth_commands" \
+"*::: :->auth" \
+&& ret=0
+
+    case $state in
+    (auth)
+        words=($line[1] "${words[@]}")
+        (( CURRENT += 1 ))
+        curcontext="${curcontext%:*:*}:miupv-help-auth-command-$line[1]:"
+        case $line[1] in
+            (set-token)
+_arguments "${_arguments_options[@]}" : \
+&& ret=0
+;;
+(renew)
+_arguments "${_arguments_options[@]}" : \
+&& ret=0
+;;
+(status)
+_arguments "${_arguments_options[@]}" : \
+&& ret=0
+;;
+(clear)
+_arguments "${_arguments_options[@]}" : \
+&& ret=0
+;;
+        esac
+    ;;
+esac
+;;
+(logout)
+_arguments "${_arguments_options[@]}" : \
+&& ret=0
+;;
+(perfil)
+_arguments "${_arguments_options[@]}" : \
+&& ret=0
+;;
+(notas)
+_arguments "${_arguments_options[@]}" : \
+&& ret=0
+;;
+(tareas)
+_arguments "${_arguments_options[@]}" : \
+&& ret=0
+;;
+(avisos)
+_arguments "${_arguments_options[@]}" : \
+&& ret=0
+;;
+(calendario)
+_arguments "${_arguments_options[@]}" : \
+":: :_miupv__subcmd__help__subcmd__calendario_commands" \
+"*::: :->calendario" \
+&& ret=0
+
+    case $state in
+    (calendario)
+        words=($line[1] "${words[@]}")
+        (( CURRENT += 1 ))
+        curcontext="${curcontext%:*:*}:miupv-help-calendario-command-$line[1]:"
+        case $line[1] in
+            (ver)
+_arguments "${_arguments_options[@]}" : \
+&& ret=0
+;;
+(export)
+_arguments "${_arguments_options[@]}" : \
+&& ret=0
+;;
+        esac
+    ;;
+esac
+;;
+(cabinas)
+_arguments "${_arguments_options[@]}" : \
+":: :_miupv__subcmd__help__subcmd__cabinas_commands" \
+"*::: :->cabinas" \
+&& ret=0
+
+    case $state in
+    (cabinas)
+        words=($line[1] "${words[@]}")
+        (( CURRENT += 1 ))
+        curcontext="${curcontext%:*:*}:miupv-help-cabinas-command-$line[1]:"
+        case $line[1] in
+            (reservar)
+_arguments "${_arguments_options[@]}" : \
+&& ret=0
+;;
+(mis-reservas)
+_arguments "${_arguments_options[@]}" : \
+&& ret=0
+;;
+(liberar)
+_arguments "${_arguments_options[@]}" : \
+&& ret=0
+;;
+        esac
+    ;;
+esac
+;;
+(deportes)
+_arguments "${_arguments_options[@]}" : \
+":: :_miupv__subcmd__help__subcmd__deportes_commands" \
+"*::: :->deportes" \
+&& ret=0
+
+    case $state in
+    (deportes)
+        words=($line[1] "${words[@]}")
+        (( CURRENT += 1 ))
+        curcontext="${curcontext%:*:*}:miupv-help-deportes-command-$line[1]:"
+        case $line[1] in
+            (mis-reservas)
+_arguments "${_arguments_options[@]}" : \
+&& ret=0
+;;
+(lista)
+_arguments "${_arguments_options[@]}" : \
+&& ret=0
+;;
+(disponibles)
+_arguments "${_arguments_options[@]}" : \
+&& ret=0
+;;
+        esac
+    ;;
+esac
+;;
+(tutorias)
+_arguments "${_arguments_options[@]}" : \
+":: :_miupv__subcmd__help__subcmd__tutorias_commands" \
+"*::: :->tutorias" \
+&& ret=0
+
+    case $state in
+    (tutorias)
+        words=($line[1] "${words[@]}")
+        (( CURRENT += 1 ))
+        curcontext="${curcontext%:*:*}:miupv-help-tutorias-command-$line[1]:"
+        case $line[1] in
+            (asignaturas)
+_arguments "${_arguments_options[@]}" : \
+&& ret=0
+;;
+        esac
+    ;;
+esac
+;;
+(carnet)
+_arguments "${_arguments_options[@]}" : \
+":: :_miupv__subcmd__help__subcmd__carnet_commands" \
+"*::: :->carnet" \
+&& ret=0
+
+    case $state in
+    (carnet)
+        words=($line[1] "${words[@]}")
+        (( CURRENT += 1 ))
+        curcontext="${curcontext%:*:*}:miupv-help-carnet-command-$line[1]:"
+        case $line[1] in
+            (info)
+_arguments "${_arguments_options[@]}" : \
+&& ret=0
+;;
+(qr)
+_arguments "${_arguments_options[@]}" : \
+&& ret=0
+;;
+        esac
+    ;;
+esac
+;;
+(wol)
+_arguments "${_arguments_options[@]}" : \
+":: :_miupv__subcmd__help__subcmd__wol_commands" \
+"*::: :->wol" \
+&& ret=0
+
+    case $state in
+    (wol)
+        words=($line[1] "${words[@]}")
+        (( CURRENT += 1 ))
+        curcontext="${curcontext%:*:*}:miupv-help-wol-command-$line[1]:"
+        case $line[1] in
+            (lista)
+_arguments "${_arguments_options[@]}" : \
+&& ret=0
+;;
+(despertar)
+_arguments "${_arguments_options[@]}" : \
+&& ret=0
+;;
+        esac
+    ;;
+esac
+;;
+(completions)
+_arguments "${_arguments_options[@]}" : \
+&& ret=0
+;;
+(help)
+_arguments "${_arguments_options[@]}" : \
+&& ret=0
+;;
+        esac
+    ;;
+esac
+;;
+        esac
+    ;;
+esac
+}
+
+(( $+functions[_miupv_commands] )) ||
+_miupv_commands() {
+    local commands; commands=(
+'login:Inicia sesión con tus credenciales UPV (Intranet CAS o token de app oficial)' \
+'auth:Gestión directa de autenticación y tokens (set-token, status, clear)' \
+'logout:Cierra la sesión activa y elimina las credenciales almacenadas' \
+'perfil:Muestra la información personal del usuario autenticado' \
+'notas:Consulta las calificaciones académicas de las asignaturas' \
+'tareas:Consulta las tareas y entregas de PoliformaT (Sakai)' \
+'avisos:Consulta los avisos y comunicaciones oficiales de escuelas y facultades' \
+'calendario:Gestiona y visualiza interactivamente (TUI) el calendario o exporta a .ics' \
+'cabinas:Consulta y reserva cabinas de estudio en bibliotecas (Biblioteca Central, etc.)' \
+'deportes:Consulta y reserva instalaciones deportivas (Servei d'\''Esports)' \
+'tutorias:Consulta tutorías docentes y asignaturas disponibles' \
+'carnet:Carnet universitario virtual (TUI) y código QR para tornos' \
+'wol:Encendido remoto de ordenadores de laboratorio por Wake-on-LAN' \
+'completions:Genera o instala el autocompletado en terminal (Tab)' \
+'help:Print this message or the help of the given subcommand(s)' \
+    )
+    _describe -t commands 'miupv commands' commands "$@"
+}
+(( $+functions[_miupv__subcmd__auth_commands] )) ||
+_miupv__subcmd__auth_commands() {
+    local commands; commands=(
+'set-token:Inyecta manualmente un token extraído de la app oficial o de la web' \
+'renew:Fuerza la renovación inmediata del token de acceso y de refresco de 30 días' \
+'status:Muestra el estado actual de la autenticación y tokens almacenados' \
+'clear:Elimina las credenciales y tokens almacenados' \
+'help:Print this message or the help of the given subcommand(s)' \
+    )
+    _describe -t commands 'miupv auth commands' commands "$@"
+}
+(( $+functions[_miupv__subcmd__auth__subcmd__clear_commands] )) ||
+_miupv__subcmd__auth__subcmd__clear_commands() {
+    local commands; commands=()
+    _describe -t commands 'miupv auth clear commands' commands "$@"
+}
+(( $+functions[_miupv__subcmd__auth__subcmd__help_commands] )) ||
+_miupv__subcmd__auth__subcmd__help_commands() {
+    local commands; commands=(
+'set-token:Inyecta manualmente un token extraído de la app oficial o de la web' \
+'renew:Fuerza la renovación inmediata del token de acceso y de refresco de 30 días' \
+'status:Muestra el estado actual de la autenticación y tokens almacenados' \
+'clear:Elimina las credenciales y tokens almacenados' \
+'help:Print this message or the help of the given subcommand(s)' \
+    )
+    _describe -t commands 'miupv auth help commands' commands "$@"
+}
+(( $+functions[_miupv__subcmd__auth__subcmd__help__subcmd__clear_commands] )) ||
+_miupv__subcmd__auth__subcmd__help__subcmd__clear_commands() {
+    local commands; commands=()
+    _describe -t commands 'miupv auth help clear commands' commands "$@"
+}
+(( $+functions[_miupv__subcmd__auth__subcmd__help__subcmd__help_commands] )) ||
+_miupv__subcmd__auth__subcmd__help__subcmd__help_commands() {
+    local commands; commands=()
+    _describe -t commands 'miupv auth help help commands' commands "$@"
+}
+(( $+functions[_miupv__subcmd__auth__subcmd__help__subcmd__renew_commands] )) ||
+_miupv__subcmd__auth__subcmd__help__subcmd__renew_commands() {
+    local commands; commands=()
+    _describe -t commands 'miupv auth help renew commands' commands "$@"
+}
+(( $+functions[_miupv__subcmd__auth__subcmd__help__subcmd__set-token_commands] )) ||
+_miupv__subcmd__auth__subcmd__help__subcmd__set-token_commands() {
+    local commands; commands=()
+    _describe -t commands 'miupv auth help set-token commands' commands "$@"
+}
+(( $+functions[_miupv__subcmd__auth__subcmd__help__subcmd__status_commands] )) ||
+_miupv__subcmd__auth__subcmd__help__subcmd__status_commands() {
+    local commands; commands=()
+    _describe -t commands 'miupv auth help status commands' commands "$@"
+}
+(( $+functions[_miupv__subcmd__auth__subcmd__renew_commands] )) ||
+_miupv__subcmd__auth__subcmd__renew_commands() {
+    local commands; commands=()
+    _describe -t commands 'miupv auth renew commands' commands "$@"
+}
+(( $+functions[_miupv__subcmd__auth__subcmd__set-token_commands] )) ||
+_miupv__subcmd__auth__subcmd__set-token_commands() {
+    local commands; commands=()
+    _describe -t commands 'miupv auth set-token commands' commands "$@"
+}
+(( $+functions[_miupv__subcmd__auth__subcmd__status_commands] )) ||
+_miupv__subcmd__auth__subcmd__status_commands() {
+    local commands; commands=()
+    _describe -t commands 'miupv auth status commands' commands "$@"
+}
+(( $+functions[_miupv__subcmd__avisos_commands] )) ||
+_miupv__subcmd__avisos_commands() {
+    local commands; commands=()
+    _describe -t commands 'miupv avisos commands' commands "$@"
+}
+(( $+functions[_miupv__subcmd__cabinas_commands] )) ||
+_miupv__subcmd__cabinas_commands() {
+    local commands; commands=(
+'reservar:Reserva una franja de cabina por su identificador' \
+'mis-reservas:Muestra las reservas de cabina activas del usuario' \
+'liberar:Cancela o libera una reserva de cabina activa' \
+'help:Print this message or the help of the given subcommand(s)' \
+    )
+    _describe -t commands 'miupv cabinas commands' commands "$@"
+}
+(( $+functions[_miupv__subcmd__cabinas__subcmd__help_commands] )) ||
+_miupv__subcmd__cabinas__subcmd__help_commands() {
+    local commands; commands=(
+'reservar:Reserva una franja de cabina por su identificador' \
+'mis-reservas:Muestra las reservas de cabina activas del usuario' \
+'liberar:Cancela o libera una reserva de cabina activa' \
+'help:Print this message or the help of the given subcommand(s)' \
+    )
+    _describe -t commands 'miupv cabinas help commands' commands "$@"
+}
+(( $+functions[_miupv__subcmd__cabinas__subcmd__help__subcmd__help_commands] )) ||
+_miupv__subcmd__cabinas__subcmd__help__subcmd__help_commands() {
+    local commands; commands=()
+    _describe -t commands 'miupv cabinas help help commands' commands "$@"
+}
+(( $+functions[_miupv__subcmd__cabinas__subcmd__help__subcmd__liberar_commands] )) ||
+_miupv__subcmd__cabinas__subcmd__help__subcmd__liberar_commands() {
+    local commands; commands=()
+    _describe -t commands 'miupv cabinas help liberar commands' commands "$@"
+}
+(( $+functions[_miupv__subcmd__cabinas__subcmd__help__subcmd__mis-reservas_commands] )) ||
+_miupv__subcmd__cabinas__subcmd__help__subcmd__mis-reservas_commands() {
+    local commands; commands=()
+    _describe -t commands 'miupv cabinas help mis-reservas commands' commands "$@"
+}
+(( $+functions[_miupv__subcmd__cabinas__subcmd__help__subcmd__reservar_commands] )) ||
+_miupv__subcmd__cabinas__subcmd__help__subcmd__reservar_commands() {
+    local commands; commands=()
+    _describe -t commands 'miupv cabinas help reservar commands' commands "$@"
+}
+(( $+functions[_miupv__subcmd__cabinas__subcmd__liberar_commands] )) ||
+_miupv__subcmd__cabinas__subcmd__liberar_commands() {
+    local commands; commands=()
+    _describe -t commands 'miupv cabinas liberar commands' commands "$@"
+}
+(( $+functions[_miupv__subcmd__cabinas__subcmd__mis-reservas_commands] )) ||
+_miupv__subcmd__cabinas__subcmd__mis-reservas_commands() {
+    local commands; commands=()
+    _describe -t commands 'miupv cabinas mis-reservas commands' commands "$@"
+}
+(( $+functions[_miupv__subcmd__cabinas__subcmd__reservar_commands] )) ||
+_miupv__subcmd__cabinas__subcmd__reservar_commands() {
+    local commands; commands=()
+    _describe -t commands 'miupv cabinas reservar commands' commands "$@"
+}
+(( $+functions[_miupv__subcmd__calendario_commands] )) ||
+_miupv__subcmd__calendario_commands() {
+    local commands; commands=(
+'ver:Abre la interfaz interactiva (TUI) del calendario académico' \
+'export:Exporta eventos académicos a un archivo .ics estándar' \
+'help:Print this message or the help of the given subcommand(s)' \
+    )
+    _describe -t commands 'miupv calendario commands' commands "$@"
+}
+(( $+functions[_miupv__subcmd__calendario__subcmd__export_commands] )) ||
+_miupv__subcmd__calendario__subcmd__export_commands() {
+    local commands; commands=()
+    _describe -t commands 'miupv calendario export commands' commands "$@"
+}
+(( $+functions[_miupv__subcmd__calendario__subcmd__help_commands] )) ||
+_miupv__subcmd__calendario__subcmd__help_commands() {
+    local commands; commands=(
+'ver:Abre la interfaz interactiva (TUI) del calendario académico' \
+'export:Exporta eventos académicos a un archivo .ics estándar' \
+'help:Print this message or the help of the given subcommand(s)' \
+    )
+    _describe -t commands 'miupv calendario help commands' commands "$@"
+}
+(( $+functions[_miupv__subcmd__calendario__subcmd__help__subcmd__export_commands] )) ||
+_miupv__subcmd__calendario__subcmd__help__subcmd__export_commands() {
+    local commands; commands=()
+    _describe -t commands 'miupv calendario help export commands' commands "$@"
+}
+(( $+functions[_miupv__subcmd__calendario__subcmd__help__subcmd__help_commands] )) ||
+_miupv__subcmd__calendario__subcmd__help__subcmd__help_commands() {
+    local commands; commands=()
+    _describe -t commands 'miupv calendario help help commands' commands "$@"
+}
+(( $+functions[_miupv__subcmd__calendario__subcmd__help__subcmd__ver_commands] )) ||
+_miupv__subcmd__calendario__subcmd__help__subcmd__ver_commands() {
+    local commands; commands=()
+    _describe -t commands 'miupv calendario help ver commands' commands "$@"
+}
+(( $+functions[_miupv__subcmd__calendario__subcmd__ver_commands] )) ||
+_miupv__subcmd__calendario__subcmd__ver_commands() {
+    local commands; commands=()
+    _describe -t commands 'miupv calendario ver commands' commands "$@"
+}
+(( $+functions[_miupv__subcmd__carnet_commands] )) ||
+_miupv__subcmd__carnet_commands() {
+    local commands; commands=(
+'info:Muestra la información del carnet universitario virtual' \
+'qr:Genera y muestra el código QR del carnet en el terminal' \
+'help:Print this message or the help of the given subcommand(s)' \
+    )
+    _describe -t commands 'miupv carnet commands' commands "$@"
+}
+(( $+functions[_miupv__subcmd__carnet__subcmd__help_commands] )) ||
+_miupv__subcmd__carnet__subcmd__help_commands() {
+    local commands; commands=(
+'info:Muestra la información del carnet universitario virtual' \
+'qr:Genera y muestra el código QR del carnet en el terminal' \
+'help:Print this message or the help of the given subcommand(s)' \
+    )
+    _describe -t commands 'miupv carnet help commands' commands "$@"
+}
+(( $+functions[_miupv__subcmd__carnet__subcmd__help__subcmd__help_commands] )) ||
+_miupv__subcmd__carnet__subcmd__help__subcmd__help_commands() {
+    local commands; commands=()
+    _describe -t commands 'miupv carnet help help commands' commands "$@"
+}
+(( $+functions[_miupv__subcmd__carnet__subcmd__help__subcmd__info_commands] )) ||
+_miupv__subcmd__carnet__subcmd__help__subcmd__info_commands() {
+    local commands; commands=()
+    _describe -t commands 'miupv carnet help info commands' commands "$@"
+}
+(( $+functions[_miupv__subcmd__carnet__subcmd__help__subcmd__qr_commands] )) ||
+_miupv__subcmd__carnet__subcmd__help__subcmd__qr_commands() {
+    local commands; commands=()
+    _describe -t commands 'miupv carnet help qr commands' commands "$@"
+}
+(( $+functions[_miupv__subcmd__carnet__subcmd__info_commands] )) ||
+_miupv__subcmd__carnet__subcmd__info_commands() {
+    local commands; commands=()
+    _describe -t commands 'miupv carnet info commands' commands "$@"
+}
+(( $+functions[_miupv__subcmd__carnet__subcmd__qr_commands] )) ||
+_miupv__subcmd__carnet__subcmd__qr_commands() {
+    local commands; commands=()
+    _describe -t commands 'miupv carnet qr commands' commands "$@"
+}
+(( $+functions[_miupv__subcmd__completions_commands] )) ||
+_miupv__subcmd__completions_commands() {
+    local commands; commands=()
+    _describe -t commands 'miupv completions commands' commands "$@"
+}
+(( $+functions[_miupv__subcmd__deportes_commands] )) ||
+_miupv__subcmd__deportes_commands() {
+    local commands; commands=(
+'mis-reservas:Muestra las reservas deportivas activas del usuario' \
+'lista:Lista las disciplinas deportivas disponibles en un campus' \
+'disponibles:Consulta pistas e instalaciones deportivas disponibles' \
+'help:Print this message or the help of the given subcommand(s)' \
+    )
+    _describe -t commands 'miupv deportes commands' commands "$@"
+}
+(( $+functions[_miupv__subcmd__deportes__subcmd__disponibles_commands] )) ||
+_miupv__subcmd__deportes__subcmd__disponibles_commands() {
+    local commands; commands=()
+    _describe -t commands 'miupv deportes disponibles commands' commands "$@"
+}
+(( $+functions[_miupv__subcmd__deportes__subcmd__help_commands] )) ||
+_miupv__subcmd__deportes__subcmd__help_commands() {
+    local commands; commands=(
+'mis-reservas:Muestra las reservas deportivas activas del usuario' \
+'lista:Lista las disciplinas deportivas disponibles en un campus' \
+'disponibles:Consulta pistas e instalaciones deportivas disponibles' \
+'help:Print this message or the help of the given subcommand(s)' \
+    )
+    _describe -t commands 'miupv deportes help commands' commands "$@"
+}
+(( $+functions[_miupv__subcmd__deportes__subcmd__help__subcmd__disponibles_commands] )) ||
+_miupv__subcmd__deportes__subcmd__help__subcmd__disponibles_commands() {
+    local commands; commands=()
+    _describe -t commands 'miupv deportes help disponibles commands' commands "$@"
+}
+(( $+functions[_miupv__subcmd__deportes__subcmd__help__subcmd__help_commands] )) ||
+_miupv__subcmd__deportes__subcmd__help__subcmd__help_commands() {
+    local commands; commands=()
+    _describe -t commands 'miupv deportes help help commands' commands "$@"
+}
+(( $+functions[_miupv__subcmd__deportes__subcmd__help__subcmd__lista_commands] )) ||
+_miupv__subcmd__deportes__subcmd__help__subcmd__lista_commands() {
+    local commands; commands=()
+    _describe -t commands 'miupv deportes help lista commands' commands "$@"
+}
+(( $+functions[_miupv__subcmd__deportes__subcmd__help__subcmd__mis-reservas_commands] )) ||
+_miupv__subcmd__deportes__subcmd__help__subcmd__mis-reservas_commands() {
+    local commands; commands=()
+    _describe -t commands 'miupv deportes help mis-reservas commands' commands "$@"
+}
+(( $+functions[_miupv__subcmd__deportes__subcmd__lista_commands] )) ||
+_miupv__subcmd__deportes__subcmd__lista_commands() {
+    local commands; commands=()
+    _describe -t commands 'miupv deportes lista commands' commands "$@"
+}
+(( $+functions[_miupv__subcmd__deportes__subcmd__mis-reservas_commands] )) ||
+_miupv__subcmd__deportes__subcmd__mis-reservas_commands() {
+    local commands; commands=()
+    _describe -t commands 'miupv deportes mis-reservas commands' commands "$@"
+}
+(( $+functions[_miupv__subcmd__help_commands] )) ||
+_miupv__subcmd__help_commands() {
+    local commands; commands=(
+'login:Inicia sesión con tus credenciales UPV (Intranet CAS o token de app oficial)' \
+'auth:Gestión directa de autenticación y tokens (set-token, status, clear)' \
+'logout:Cierra la sesión activa y elimina las credenciales almacenadas' \
+'perfil:Muestra la información personal del usuario autenticado' \
+'notas:Consulta las calificaciones académicas de las asignaturas' \
+'tareas:Consulta las tareas y entregas de PoliformaT (Sakai)' \
+'avisos:Consulta los avisos y comunicaciones oficiales de escuelas y facultades' \
+'calendario:Gestiona y visualiza interactivamente (TUI) el calendario o exporta a .ics' \
+'cabinas:Consulta y reserva cabinas de estudio en bibliotecas (Biblioteca Central, etc.)' \
+'deportes:Consulta y reserva instalaciones deportivas (Servei d'\''Esports)' \
+'tutorias:Consulta tutorías docentes y asignaturas disponibles' \
+'carnet:Carnet universitario virtual (TUI) y código QR para tornos' \
+'wol:Encendido remoto de ordenadores de laboratorio por Wake-on-LAN' \
+'completions:Genera o instala el autocompletado en terminal (Tab)' \
+'help:Print this message or the help of the given subcommand(s)' \
+    )
+    _describe -t commands 'miupv help commands' commands "$@"
+}
+(( $+functions[_miupv__subcmd__help__subcmd__auth_commands] )) ||
+_miupv__subcmd__help__subcmd__auth_commands() {
+    local commands; commands=(
+'set-token:Inyecta manualmente un token extraído de la app oficial o de la web' \
+'renew:Fuerza la renovación inmediata del token de acceso y de refresco de 30 días' \
+'status:Muestra el estado actual de la autenticación y tokens almacenados' \
+'clear:Elimina las credenciales y tokens almacenados' \
+    )
+    _describe -t commands 'miupv help auth commands' commands "$@"
+}
+(( $+functions[_miupv__subcmd__help__subcmd__auth__subcmd__clear_commands] )) ||
+_miupv__subcmd__help__subcmd__auth__subcmd__clear_commands() {
+    local commands; commands=()
+    _describe -t commands 'miupv help auth clear commands' commands "$@"
+}
+(( $+functions[_miupv__subcmd__help__subcmd__auth__subcmd__renew_commands] )) ||
+_miupv__subcmd__help__subcmd__auth__subcmd__renew_commands() {
+    local commands; commands=()
+    _describe -t commands 'miupv help auth renew commands' commands "$@"
+}
+(( $+functions[_miupv__subcmd__help__subcmd__auth__subcmd__set-token_commands] )) ||
+_miupv__subcmd__help__subcmd__auth__subcmd__set-token_commands() {
+    local commands; commands=()
+    _describe -t commands 'miupv help auth set-token commands' commands "$@"
+}
+(( $+functions[_miupv__subcmd__help__subcmd__auth__subcmd__status_commands] )) ||
+_miupv__subcmd__help__subcmd__auth__subcmd__status_commands() {
+    local commands; commands=()
+    _describe -t commands 'miupv help auth status commands' commands "$@"
+}
+(( $+functions[_miupv__subcmd__help__subcmd__avisos_commands] )) ||
+_miupv__subcmd__help__subcmd__avisos_commands() {
+    local commands; commands=()
+    _describe -t commands 'miupv help avisos commands' commands "$@"
+}
+(( $+functions[_miupv__subcmd__help__subcmd__cabinas_commands] )) ||
+_miupv__subcmd__help__subcmd__cabinas_commands() {
+    local commands; commands=(
+'reservar:Reserva una franja de cabina por su identificador' \
+'mis-reservas:Muestra las reservas de cabina activas del usuario' \
+'liberar:Cancela o libera una reserva de cabina activa' \
+    )
+    _describe -t commands 'miupv help cabinas commands' commands "$@"
+}
+(( $+functions[_miupv__subcmd__help__subcmd__cabinas__subcmd__liberar_commands] )) ||
+_miupv__subcmd__help__subcmd__cabinas__subcmd__liberar_commands() {
+    local commands; commands=()
+    _describe -t commands 'miupv help cabinas liberar commands' commands "$@"
+}
+(( $+functions[_miupv__subcmd__help__subcmd__cabinas__subcmd__mis-reservas_commands] )) ||
+_miupv__subcmd__help__subcmd__cabinas__subcmd__mis-reservas_commands() {
+    local commands; commands=()
+    _describe -t commands 'miupv help cabinas mis-reservas commands' commands "$@"
+}
+(( $+functions[_miupv__subcmd__help__subcmd__cabinas__subcmd__reservar_commands] )) ||
+_miupv__subcmd__help__subcmd__cabinas__subcmd__reservar_commands() {
+    local commands; commands=()
+    _describe -t commands 'miupv help cabinas reservar commands' commands "$@"
+}
+(( $+functions[_miupv__subcmd__help__subcmd__calendario_commands] )) ||
+_miupv__subcmd__help__subcmd__calendario_commands() {
+    local commands; commands=(
+'ver:Abre la interfaz interactiva (TUI) del calendario académico' \
+'export:Exporta eventos académicos a un archivo .ics estándar' \
+    )
+    _describe -t commands 'miupv help calendario commands' commands "$@"
+}
+(( $+functions[_miupv__subcmd__help__subcmd__calendario__subcmd__export_commands] )) ||
+_miupv__subcmd__help__subcmd__calendario__subcmd__export_commands() {
+    local commands; commands=()
+    _describe -t commands 'miupv help calendario export commands' commands "$@"
+}
+(( $+functions[_miupv__subcmd__help__subcmd__calendario__subcmd__ver_commands] )) ||
+_miupv__subcmd__help__subcmd__calendario__subcmd__ver_commands() {
+    local commands; commands=()
+    _describe -t commands 'miupv help calendario ver commands' commands "$@"
+}
+(( $+functions[_miupv__subcmd__help__subcmd__carnet_commands] )) ||
+_miupv__subcmd__help__subcmd__carnet_commands() {
+    local commands; commands=(
+'info:Muestra la información del carnet universitario virtual' \
+'qr:Genera y muestra el código QR del carnet en el terminal' \
+    )
+    _describe -t commands 'miupv help carnet commands' commands "$@"
+}
+(( $+functions[_miupv__subcmd__help__subcmd__carnet__subcmd__info_commands] )) ||
+_miupv__subcmd__help__subcmd__carnet__subcmd__info_commands() {
+    local commands; commands=()
+    _describe -t commands 'miupv help carnet info commands' commands "$@"
+}
+(( $+functions[_miupv__subcmd__help__subcmd__carnet__subcmd__qr_commands] )) ||
+_miupv__subcmd__help__subcmd__carnet__subcmd__qr_commands() {
+    local commands; commands=()
+    _describe -t commands 'miupv help carnet qr commands' commands "$@"
+}
+(( $+functions[_miupv__subcmd__help__subcmd__completions_commands] )) ||
+_miupv__subcmd__help__subcmd__completions_commands() {
+    local commands; commands=()
+    _describe -t commands 'miupv help completions commands' commands "$@"
+}
+(( $+functions[_miupv__subcmd__help__subcmd__deportes_commands] )) ||
+_miupv__subcmd__help__subcmd__deportes_commands() {
+    local commands; commands=(
+'mis-reservas:Muestra las reservas deportivas activas del usuario' \
+'lista:Lista las disciplinas deportivas disponibles en un campus' \
+'disponibles:Consulta pistas e instalaciones deportivas disponibles' \
+    )
+    _describe -t commands 'miupv help deportes commands' commands "$@"
+}
+(( $+functions[_miupv__subcmd__help__subcmd__deportes__subcmd__disponibles_commands] )) ||
+_miupv__subcmd__help__subcmd__deportes__subcmd__disponibles_commands() {
+    local commands; commands=()
+    _describe -t commands 'miupv help deportes disponibles commands' commands "$@"
+}
+(( $+functions[_miupv__subcmd__help__subcmd__deportes__subcmd__lista_commands] )) ||
+_miupv__subcmd__help__subcmd__deportes__subcmd__lista_commands() {
+    local commands; commands=()
+    _describe -t commands 'miupv help deportes lista commands' commands "$@"
+}
+(( $+functions[_miupv__subcmd__help__subcmd__deportes__subcmd__mis-reservas_commands] )) ||
+_miupv__subcmd__help__subcmd__deportes__subcmd__mis-reservas_commands() {
+    local commands; commands=()
+    _describe -t commands 'miupv help deportes mis-reservas commands' commands "$@"
+}
+(( $+functions[_miupv__subcmd__help__subcmd__help_commands] )) ||
+_miupv__subcmd__help__subcmd__help_commands() {
+    local commands; commands=()
+    _describe -t commands 'miupv help help commands' commands "$@"
+}
+(( $+functions[_miupv__subcmd__help__subcmd__login_commands] )) ||
+_miupv__subcmd__help__subcmd__login_commands() {
+    local commands; commands=()
+    _describe -t commands 'miupv help login commands' commands "$@"
+}
+(( $+functions[_miupv__subcmd__help__subcmd__logout_commands] )) ||
+_miupv__subcmd__help__subcmd__logout_commands() {
+    local commands; commands=()
+    _describe -t commands 'miupv help logout commands' commands "$@"
+}
+(( $+functions[_miupv__subcmd__help__subcmd__notas_commands] )) ||
+_miupv__subcmd__help__subcmd__notas_commands() {
+    local commands; commands=()
+    _describe -t commands 'miupv help notas commands' commands "$@"
+}
+(( $+functions[_miupv__subcmd__help__subcmd__perfil_commands] )) ||
+_miupv__subcmd__help__subcmd__perfil_commands() {
+    local commands; commands=()
+    _describe -t commands 'miupv help perfil commands' commands "$@"
+}
+(( $+functions[_miupv__subcmd__help__subcmd__tareas_commands] )) ||
+_miupv__subcmd__help__subcmd__tareas_commands() {
+    local commands; commands=()
+    _describe -t commands 'miupv help tareas commands' commands "$@"
+}
+(( $+functions[_miupv__subcmd__help__subcmd__tutorias_commands] )) ||
+_miupv__subcmd__help__subcmd__tutorias_commands() {
+    local commands; commands=(
+'asignaturas:Muestra las asignaturas y profesorado disponibles para tutorías' \
+    )
+    _describe -t commands 'miupv help tutorias commands' commands "$@"
+}
+(( $+functions[_miupv__subcmd__help__subcmd__tutorias__subcmd__asignaturas_commands] )) ||
+_miupv__subcmd__help__subcmd__tutorias__subcmd__asignaturas_commands() {
+    local commands; commands=()
+    _describe -t commands 'miupv help tutorias asignaturas commands' commands "$@"
+}
+(( $+functions[_miupv__subcmd__help__subcmd__wol_commands] )) ||
+_miupv__subcmd__help__subcmd__wol_commands() {
+    local commands; commands=(
+'lista:Muestra los ordenadores asignados al usuario en laboratorios o despachos' \
+'despertar:Envía el paquete Wake-on-LAN para encender el equipo remoto' \
+    )
+    _describe -t commands 'miupv help wol commands' commands "$@"
+}
+(( $+functions[_miupv__subcmd__help__subcmd__wol__subcmd__despertar_commands] )) ||
+_miupv__subcmd__help__subcmd__wol__subcmd__despertar_commands() {
+    local commands; commands=()
+    _describe -t commands 'miupv help wol despertar commands' commands "$@"
+}
+(( $+functions[_miupv__subcmd__help__subcmd__wol__subcmd__lista_commands] )) ||
+_miupv__subcmd__help__subcmd__wol__subcmd__lista_commands() {
+    local commands; commands=()
+    _describe -t commands 'miupv help wol lista commands' commands "$@"
+}
+(( $+functions[_miupv__subcmd__login_commands] )) ||
+_miupv__subcmd__login_commands() {
+    local commands; commands=()
+    _describe -t commands 'miupv login commands' commands "$@"
+}
+(( $+functions[_miupv__subcmd__logout_commands] )) ||
+_miupv__subcmd__logout_commands() {
+    local commands; commands=()
+    _describe -t commands 'miupv logout commands' commands "$@"
+}
+(( $+functions[_miupv__subcmd__notas_commands] )) ||
+_miupv__subcmd__notas_commands() {
+    local commands; commands=()
+    _describe -t commands 'miupv notas commands' commands "$@"
+}
+(( $+functions[_miupv__subcmd__perfil_commands] )) ||
+_miupv__subcmd__perfil_commands() {
+    local commands; commands=()
+    _describe -t commands 'miupv perfil commands' commands "$@"
+}
+(( $+functions[_miupv__subcmd__tareas_commands] )) ||
+_miupv__subcmd__tareas_commands() {
+    local commands; commands=()
+    _describe -t commands 'miupv tareas commands' commands "$@"
+}
+(( $+functions[_miupv__subcmd__tutorias_commands] )) ||
+_miupv__subcmd__tutorias_commands() {
+    local commands; commands=(
+'asignaturas:Muestra las asignaturas y profesorado disponibles para tutorías' \
+'help:Print this message or the help of the given subcommand(s)' \
+    )
+    _describe -t commands 'miupv tutorias commands' commands "$@"
+}
+(( $+functions[_miupv__subcmd__tutorias__subcmd__asignaturas_commands] )) ||
+_miupv__subcmd__tutorias__subcmd__asignaturas_commands() {
+    local commands; commands=()
+    _describe -t commands 'miupv tutorias asignaturas commands' commands "$@"
+}
+(( $+functions[_miupv__subcmd__tutorias__subcmd__help_commands] )) ||
+_miupv__subcmd__tutorias__subcmd__help_commands() {
+    local commands; commands=(
+'asignaturas:Muestra las asignaturas y profesorado disponibles para tutorías' \
+'help:Print this message or the help of the given subcommand(s)' \
+    )
+    _describe -t commands 'miupv tutorias help commands' commands "$@"
+}
+(( $+functions[_miupv__subcmd__tutorias__subcmd__help__subcmd__asignaturas_commands] )) ||
+_miupv__subcmd__tutorias__subcmd__help__subcmd__asignaturas_commands() {
+    local commands; commands=()
+    _describe -t commands 'miupv tutorias help asignaturas commands' commands "$@"
+}
+(( $+functions[_miupv__subcmd__tutorias__subcmd__help__subcmd__help_commands] )) ||
+_miupv__subcmd__tutorias__subcmd__help__subcmd__help_commands() {
+    local commands; commands=()
+    _describe -t commands 'miupv tutorias help help commands' commands "$@"
+}
+(( $+functions[_miupv__subcmd__wol_commands] )) ||
+_miupv__subcmd__wol_commands() {
+    local commands; commands=(
+'lista:Muestra los ordenadores asignados al usuario en laboratorios o despachos' \
+'despertar:Envía el paquete Wake-on-LAN para encender el equipo remoto' \
+'help:Print this message or the help of the given subcommand(s)' \
+    )
+    _describe -t commands 'miupv wol commands' commands "$@"
+}
+(( $+functions[_miupv__subcmd__wol__subcmd__despertar_commands] )) ||
+_miupv__subcmd__wol__subcmd__despertar_commands() {
+    local commands; commands=()
+    _describe -t commands 'miupv wol despertar commands' commands "$@"
+}
+(( $+functions[_miupv__subcmd__wol__subcmd__help_commands] )) ||
+_miupv__subcmd__wol__subcmd__help_commands() {
+    local commands; commands=(
+'lista:Muestra los ordenadores asignados al usuario en laboratorios o despachos' \
+'despertar:Envía el paquete Wake-on-LAN para encender el equipo remoto' \
+'help:Print this message or the help of the given subcommand(s)' \
+    )
+    _describe -t commands 'miupv wol help commands' commands "$@"
+}
+(( $+functions[_miupv__subcmd__wol__subcmd__help__subcmd__despertar_commands] )) ||
+_miupv__subcmd__wol__subcmd__help__subcmd__despertar_commands() {
+    local commands; commands=()
+    _describe -t commands 'miupv wol help despertar commands' commands "$@"
+}
+(( $+functions[_miupv__subcmd__wol__subcmd__help__subcmd__help_commands] )) ||
+_miupv__subcmd__wol__subcmd__help__subcmd__help_commands() {
+    local commands; commands=()
+    _describe -t commands 'miupv wol help help commands' commands "$@"
+}
+(( $+functions[_miupv__subcmd__wol__subcmd__help__subcmd__lista_commands] )) ||
+_miupv__subcmd__wol__subcmd__help__subcmd__lista_commands() {
+    local commands; commands=()
+    _describe -t commands 'miupv wol help lista commands' commands "$@"
+}
+(( $+functions[_miupv__subcmd__wol__subcmd__lista_commands] )) ||
+_miupv__subcmd__wol__subcmd__lista_commands() {
+    local commands; commands=()
+    _describe -t commands 'miupv wol lista commands' commands "$@"
+}
+
+if [ "$funcstack[1]" = "_miupv" ]; then
+    _miupv "$@"
+else
+    compdef _miupv miupv
+fi

@@ -1,0 +1,304 @@
+#!/usr/bin/env bash
+# ==============================================================================
+# dotfiles-doctor - Security & Integrity Auditor for Dotfiles Bare Repository
+# ==============================================================================
+#
+# Inspects tracked and staged files in the dotfiles git repository to prevent
+# accidental leakage of private keys, credentials, local tokens, or histories.
+#
+# Usage:
+#   dotfiles-doctor [--git-dir=<path>] [--work-tree=<path>] [--staged-only] [--verbose]
+#
+# Defaults:
+#   GIT_DIR:   ${DOTFILES_GIT_DIR:-$HOME/.dotfiles.git}
+#   WORK_TREE: ${DOTFILES_WORK_TREE:-$HOME}
+# ==============================================================================
+
+set -o pipefail
+
+# --- Color formatting ---
+if [[ -t 1 ]] && [[ -z "${NO_COLOR:-}" ]]; then
+    C_RESET="\033[0m"
+    C_BOLD="\033[1m"
+    C_RED="\033[31m"
+    C_GREEN="\033[32m"
+    C_YELLOW="\033[33m"
+    C_BLUE="\033[34m"
+    C_MAGENTA="\033[35m"
+    C_CYAN="\033[36m"
+else
+    C_RESET=""
+    C_BOLD=""
+    C_RED=""
+    C_GREEN=""
+    C_YELLOW=""
+    C_BLUE=""
+    C_MAGENTA=""
+    C_CYAN=""
+fi
+
+# --- CLI Options & Defaults ---
+GIT_DIR="${DOTFILES_GIT_DIR:-$HOME/.dotfiles.git}"
+WORK_TREE="${DOTFILES_WORK_TREE:-$HOME}"
+CHECK_STAGED_ONLY=0
+VERBOSE=0
+
+show_help() {
+    printf "%b\n" "${C_BOLD}dotfiles-doctor${C_RESET} - Dotfiles Security & Sanity Auditor
+
+${C_BOLD}USAGE:${C_RESET}
+    dotfiles-doctor [OPTIONS]
+
+${C_BOLD}OPTIONS:${C_RESET}
+    --git-dir=<path>    Path to bare git directory (default: ~/.dotfiles.git)
+    --work-tree=<path>  Working tree path (default: ~)
+    --staged-only       Only check staged files instead of all tracked files
+    -v, --verbose       Print verbose file scanning progress
+    -h, --help          Show this help message and exit
+
+${C_BOLD}CHECKS PERFORMED:${C_RESET}
+    1. Sensitive paths (SSH, GPG, PKI, credentials, local overrides, histories)
+    2. Secret regex patterns (API keys, tokens, private keys, AWS/Slack/GitHub keys)
+    3. Git status sanity check (untracked files configuration, repository health)"
+}
+
+while [[ $# -gt 0 ]]; do
+    case "$1" in
+        --git-dir=*)
+            GIT_DIR="${1#*=}"
+            shift
+            ;;
+        --git-dir)
+            GIT_DIR="$2"
+            shift 2
+            ;;
+        --work-tree=*)
+            WORK_TREE="${1#*=}"
+            shift
+            ;;
+        --work-tree)
+            WORK_TREE="$2"
+            shift 2
+            ;;
+        --staged-only)
+            CHECK_STAGED_ONLY=1
+            shift
+            ;;
+        -v|--verbose)
+            VERBOSE=1
+            shift
+            ;;
+        -h|--help)
+            show_help
+            exit 0
+            ;;
+        *)
+            echo -e "${C_RED}Error: Unknown argument: $1${C_RESET}" >&2
+            show_help
+            exit 2
+            ;;
+    esac
+done
+
+DOTFILES_CMD=(git --git-dir="$GIT_DIR" --work-tree="$WORK_TREE")
+
+echo -e "${C_BOLD}${C_CYAN}=== Dotfiles Doctor: Security & Sanity Audit ===${C_RESET}"
+echo -e "Repository: ${C_BLUE}${GIT_DIR}${C_RESET}"
+echo -e "Work Tree:  ${C_BLUE}${WORK_TREE}${C_RESET}\n"
+
+# Verify Git Directory exists
+if [[ ! -d "$GIT_DIR" ]]; then
+    echo -e "${C_RED}[FAIL]${C_RESET} Git directory '${GIT_DIR}' does not exist!"
+    echo -e "Please ensure your dotfiles bare repository is initialized or specify --git-dir=<path>."
+    exit 1
+fi
+
+TOTAL_FAILURES=0
+TOTAL_WARNINGS=0
+
+# --- Helper functions ---
+pass() {
+    echo -e " ${C_GREEN}[PASS]${C_RESET} $1"
+}
+
+fail() {
+    echo -e " ${C_RED}[FAIL]${C_RESET} $1"
+    ((TOTAL_FAILURES++))
+}
+
+warn() {
+    echo -e " ${C_YELLOW}[WARN]${C_RESET} $1"
+    ((TOTAL_WARNINGS++))
+}
+
+# --- 1. Gather files to inspect ---
+echo -e "${C_BOLD}Phase 1: Collecting repository file list...${C_RESET}"
+
+FILES=()
+if [[ $CHECK_STAGED_ONLY -eq 1 ]]; then
+    while IFS= read -r line; do
+        [[ -n "$line" ]] && FILES+=("$line")
+    done < <("${DOTFILES_CMD[@]}" diff --cached --name-only 2>/dev/null)
+else
+    while IFS= read -r line; do
+        [[ -n "$line" ]] && FILES+=("$line")
+    done < <("${DOTFILES_CMD[@]}" ls-files 2>/dev/null)
+fi
+
+TOTAL_FILES=${#FILES[@]}
+if [[ $TOTAL_FILES -eq 0 ]]; then
+    if [[ $CHECK_STAGED_ONLY -eq 1 ]]; then
+        echo -e " ${C_YELLOW}[INFO]${C_RESET} No files currently staged for commit."
+    else
+        echo -e " ${C_YELLOW}[INFO]${C_RESET} No files are currently tracked in this repository."
+    fi
+else
+    pass "Found ${TOTAL_FILES} file(s) to inspect."
+fi
+
+# --- 2. Check for sensitive path patterns ---
+echo -e "\n${C_BOLD}Phase 2: Auditing file paths for sensitive files...${C_RESET}"
+
+# Blacklist regex patterns for paths
+BLOCKED_PATH_PATTERNS=(
+    # SSH keys & configs
+    "^(\.ssh/|ssh/)"
+    # GPG & Password stores
+    "^(\.gnupg/|\.password-store/)"
+    # PKI, certificates, private keys
+    "^(\.pki/|\.mitmproxy/)"
+    "\.(pem|key|keystore|p12|pfx|pkcs12)$"
+    "\.config/InputLeap/SSL/"
+    "\.config/lamco-rdp-server/"
+    "\.config/freerdp/server/"
+    # Tokens & credentials files
+    "\.config/gh/hosts\.yml$"
+    "\.config/msga/"
+    "\.config/miupv/"
+    "\.config/wayspot-lyrics/config\.toml$"
+    "\.config/remmina/"
+    "\.local/share/remmina/"
+    "\.config/app\.moosync\.moosync/"
+    "^(\.aws/|\.gemini/|\.android/|\.copilot/|\.antigravity-ide/)"
+    # Local machine overrides
+    "(\.local$|\.local\..*|\.env$|\.env\..*)"
+    "(\.zshrc\.local$|\.gitconfig\.local$)"
+    # Shell histories & logs
+    "(\..*_history$|.*\.history$|.*-history\.txt$|.*\.log$|\.wget-hsts$|\.zcompdump)"
+    "\.config/ffuf/history/"
+    "\.config/NTInfo/"
+    "\.config/qBittorrent/"
+    # Browser & Electron profiles / caches
+    "\.config/(zen|mozilla|vesktop|spotify|obsidian|Trae|Code - OSS|dconf)/"
+    "\.config/pulse/cookie$"
+    "^(\.cache/|\.local/state/|\.local/share/Trash/)"
+    # Build artifacts
+    "(bat_power$|__pycache__/|\.(o|so|bak|swp|swo)$|^\.~lock\.)"
+)
+
+PATH_ISSUES=0
+
+for file in "${FILES[@]}"; do
+    for pattern in "${BLOCKED_PATH_PATTERNS[@]}"; do
+        if [[ "$file" =~ $pattern ]]; then
+            fail "Blocked path pattern '${pattern}' matched tracked file: ${C_BOLD}${file}${C_RESET}"
+            ((PATH_ISSUES++))
+            break
+        fi
+    done
+done
+
+if [[ $PATH_ISSUES -eq 0 && $TOTAL_FILES -gt 0 ]]; then
+    pass "No sensitive or blacklisted file paths found in repository."
+fi
+
+# --- 3. Scan file contents for secret patterns ---
+echo -e "\n${C_BOLD}Phase 3: Auditing file contents for leaked secrets...${C_RESET}"
+
+SECRET_PATTERNS=(
+    "GitHub Token|ghp_[0-9a-zA-Z]{36}"
+    "GitHub OAuth/App|gh[osru]_[0-9a-zA-Z]{36}"
+    "GitHub Fine-grained PAT|github_pat_[0-9a-zA-Z]{22}_[0-9a-zA-Z]{59}"
+    "Slack Token|xox[baprs]-[0-9a-zA-Z]{10,48}"
+    "AWS Access Key ID|(A3T[A-Z0-9]|AKIA|AGPA|AIDA|AROA|AIPA|ANPA|ANVA|ASIA)[A-Z0-9]{16}"
+    "Private Key Header|-----BEGIN (RSA |EC |DSA |OPENSSH |PGP )?PRIVATE KEY-----"
+    "Encrypted Private Key|-----BEGIN ENCRYPTED PRIVATE KEY-----"
+)
+
+CONTENT_ISSUES=0
+
+for file in "${FILES[@]}"; do
+    # Skip auditing dotfiles-doctor itself for content strings since it contains the search patterns
+    if [[ "$file" == *dotfiles-doctor* ]]; then
+        continue
+    fi
+
+    TARGET_PATH="${WORK_TREE}/${file}"
+    # If the file does not exist in work tree, retrieve blob from git
+    if [[ ! -f "$TARGET_PATH" ]]; then
+        CONTENT_SOURCE=("${DOTFILES_CMD[@]}" show "HEAD:${file}")
+    else
+        # Skip if binary file
+        if file --mime "$TARGET_PATH" 2>/dev/null | grep -q "charset=binary"; then
+            continue
+        fi
+        CONTENT_SOURCE=(cat "$TARGET_PATH")
+    fi
+
+    # Run check against secret patterns
+    for item in "${SECRET_PATTERNS[@]}"; do
+        NAME="${item%%|*}"
+        REGEX="${item#*|}"
+
+        MATCH_LINES=$("${CONTENT_SOURCE[@]}" 2>/dev/null | grep -n -E -e "$REGEX" || true)
+        if [[ -n "$MATCH_LINES" ]]; then
+            while IFS= read -r match; do
+                LINE_NUM="${match%%:*}"
+                # Mask matched secret for safe reporting
+                MASKED_LINE=$(echo "${match#*:}" | sed -E -e 's/([A-Za-z0-9_-]{4})[A-Za-z0-9_-]{6,}/\1...[REDACTED]/g')
+                fail "Secret detected [${NAME}] in ${C_BOLD}${file}:${LINE_NUM}${C_RESET} -> ${MASKED_LINE}"
+                ((CONTENT_ISSUES++))
+            done <<< "$MATCH_LINES"
+        fi
+    done
+done
+
+if [[ $CONTENT_ISSUES -eq 0 && $TOTAL_FILES -gt 0 ]]; then
+    pass "No credential or private key patterns found in file contents."
+fi
+
+# --- 4. Git Repository Settings & Sanity ---
+echo -e "\n${C_BOLD}Phase 4: Checking git configuration & untracked status...${C_RESET}"
+
+SHOW_UNTRACKED=$("${DOTFILES_CMD[@]}" config status.showUntrackedFiles 2>/dev/null || echo "not-set")
+if [[ "$SHOW_UNTRACKED" == "no" ]]; then
+    pass "'status.showUntrackedFiles' is properly configured to 'no'."
+else
+    warn "'status.showUntrackedFiles' is set to '${SHOW_UNTRACKED}' (should be 'no' to keep home directory clean)."
+    echo -e "   Run: ${C_CYAN}git --git-dir=${GIT_DIR} --work-tree=${WORK_TREE} config --local status.showUntrackedFiles no${C_RESET}"
+fi
+
+# Check .gitignore presence in work-tree
+if [[ -f "${WORK_TREE}/.gitignore" ]]; then
+    pass "Root .gitignore file exists in ${WORK_TREE}/.gitignore."
+else
+    warn "Missing .gitignore file in ${WORK_TREE}/.gitignore."
+fi
+
+# --- Summary ---
+echo -e "\n${C_BOLD}================================================${C_RESET}"
+echo -e "${C_BOLD}                 Audit Summary                  ${C_RESET}"
+echo -e "${C_BOLD}================================================${C_RESET}"
+echo -e "Files checked:     ${TOTAL_FILES}"
+echo -e "Total Failures:    ${TOTAL_FAILURES}"
+echo -e "Total Warnings:    ${TOTAL_WARNINGS}"
+
+if [[ $TOTAL_FAILURES -eq 0 ]]; then
+    echo -e "\n${C_GREEN}${C_BOLD}SUCCESS: All safety and security checks passed!${C_RESET}\n"
+    exit 0
+else
+    echo -e "\n${C_RED}${C_BOLD}FAILURE: Security issues or blacklisted files detected!${C_RESET}"
+    echo -e "To unstage or untrack flagged files without deleting them locally:"
+    echo -e "   ${C_CYAN}git --git-dir=${GIT_DIR} --work-tree=${WORK_TREE} rm --cached <file>${C_RESET}\n"
+    exit 1
+fi

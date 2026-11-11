@@ -1,0 +1,123 @@
+* {
+    border: none;
+    border-radius: 0;
+    font-family: "JetBrainsMono Nerd Font", monospace;
+    font-size: 13px;
+    font-weight: 600;
+    min-height: 0;
+}
+
+/* Base sólida pegada al marco superior */
+window#waybar {
+    background-color: #181a20;
+    color: #e8e8d8;
+    border-bottom: 2px solid #2c4246;
+}
+
+/* --- WORKSPACES ANIMADOS --- */
+#workspaces {
+    margin: 0;
+    padding: 0;
+}
+
+#workspaces button {
+    padding: 2px 12px;
+    margin: 0;
+    background: transparent;
+    color: #2c4246;
+    border-bottom: 2px solid transparent;
+    /* Transición suave en color, fondo y subrayado */
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+#workspaces button:hover {
+    color: #e8e8d8;
+    background: rgba(232, 232, 216, 0.08);
+    border-bottom: 2px solid #e8e8d8;
+}
+
+#workspaces button.active {
+    color: #e8e8d8;
+    background: linear-gradient(180deg, rgba(212, 92, 91, 0.05) 0%, rgba(212, 92, 91, 0.35) 100%);
+    border-bottom: 2px solid #d45c5b;
+}
+
+/* --- MÓDULOS DEL SISTEMA --- */
+#window, #clock, #pulseaudio, #network, #battery, #tray, #custom-wayspot-lyrics {
+    margin: 0;
+    padding: 2px 12px;
+    background: transparent;
+    border-bottom: 2px solid transparent;
+    border-left: 1px solid rgba(44, 66, 70, 0.5);
+    transition: all 0.25s ease-out;
+}
+
+/* Efecto hover interactivo: se ilumina desde la base */
+#pulseaudio:hover, #network:hover, #clock:hover {
+    background: linear-gradient(180deg, transparent 0%, rgba(44, 66, 70, 0.4) 100%);
+    border-bottom: 2px solid #e8e8d8;
+    color: #ffffff;
+}
+
+/* Título de la ventana activa: fundido sutil */
+#window {
+    border-left: none;
+    color: #e8e8d8;
+    transition: color 0.4s ease;
+}
+
+/* Reloj como ancla central */
+#clock {
+    color: #e8e8d8;
+    background: linear-gradient(180deg, rgba(212, 92, 91, 0.1) 0%, rgba(212, 92, 91, 0.25) 100%);
+    border-bottom: 2px solid #d45c5b;
+}
+
+#clock:hover {
+    background: rgba(212, 92, 91, 0.4);
+    border-bottom: 2px solid #e8e8d8;
+}
+
+/* --- ESTADOS DINÁMICOS & BATERÍA --- */
+#battery.warning, #custom-battery.warning {
+    color: #ff9e64;
+    border-bottom: 2px solid #ff9e64;
+}
+
+/* Alerta crítica: parpadeo nativo de Waybar usando transition de GTK */
+#battery.critical, #custom-battery.critical {
+    color: #e8e8d8;
+    background-color: #d45c5b;
+    border-bottom: 2px solid #e8e8d8;
+    animation-name: blink;
+    animation-duration: 0.8s;
+    animation-timing-function: linear;
+    animation-iteration-count: infinite;
+    animation-direction: alternate;
+}
+
+@keyframes blink {
+    to {
+        background-color: #181a20;
+        color: #d45c5b;
+        border-bottom-color: transparent;
+    }
+}
+
+/* --- WAYSPOT LYRICS --- */
+#custom-wayspot-lyrics {
+    border-left: none;
+    transition: color 0.3s ease, border-bottom 0.3s ease;
+}
+
+#custom-wayspot-lyrics.playing {
+    color: #e8e8d8;
+    background: linear-gradient(180deg, transparent 0%, rgba(44, 66, 70, 0.3) 100%);
+    border-bottom: 2px solid #2c4246;
+}
+
+#custom-wayspot-lyrics.paused {
+    color: #2c4246;
+    font-style: italic;
+    border-bottom: 2px solid transparent;
+}
